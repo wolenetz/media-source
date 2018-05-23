@@ -2,21 +2,27 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Media Source Extensions™</title>
+
+    <!-- For sub-branches for per-feature incubation, use feature name in title instead of base.*. -->
+    <title>Media Source Extensions™ - vNext Feature Incubations base, see also per-feature branches</title>
+
     <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class="remove"></script>
     <!--<script src="respec-w3c-common.js" class="remove"></script>-->
     <script src="media-source.js" class="remove"></script>
     <script class="remove">
       var respecConfig = {
       // specification status (e.g., WD, LCWD, NOTE, etc.). If in doubt use ED.
-      specStatus: "ED",
+      specStatus: "CG-DRAFT",
       useExperimentalStyles: true,
 
       // the specification's short name, as in http://www.w3.org/TR/short-name/
       shortName: "media-source",
 
       // if there a publicly available Editor's Draft, this is the link
-      edDraftURI:           "https://w3c.github.io/media-source/",
+      /* While incubating in a per-feature branch, use the rawgit link for that branch, like:
+       * edDraftURI:           "https://rawgit.com/wicg/media-source/codec-switching/",
+       */
+      edDraftURI:           "https://wicg.github.io/media-source/",
 
       // if this is a LCWD, uncomment and set the end of its review period
       // lcEnd: "2009-08-05",
@@ -25,9 +31,9 @@
       publishDate: "2016-07-26",
       */
 
-      previousMaturity: "PR",
-      previousPublishDate: "2016-10-04",
-      errata: "https://w3c.github.io/media-source/mse-1-errata.html",
+      // previousMaturity: "PR",
+      // previousPublishDate: "2016-10-04",
+      // errata: "https://w3c.github.io/media-source/mse-1-errata.html",
       // editors, add as many as you like
       // only "name" is required
       editors:  [
@@ -70,13 +76,13 @@
       ],
 
       // name of the WG
-      wg:           "HTML Media Extensions Working Group",
+      wg:           "Web Platform Incubator Community Group",
 
       // URI of the public WG page
-      wgURI:        "https://www.w3.org/html/wg/",
+      wgURI:        "https://www.w3.org/community/wicg/",
 
       // name (without the @w3c.org) of the public mailing to which comments are due
-      wgPublicList: "public-html-media",
+      //wgPublicList: "public-html-media",
       license: 'w3c-software-doc',
       // URI of the patent status for this WG, for Rec-track documents
       // !!!! IMPORTANT !!!!
@@ -85,9 +91,9 @@
       // Team Contact.
       wgPatentURI: "https://www.w3.org/2004/01/pp-impl/40318/status",
 
-      lcEnd: "2016-08-10",
-      prEnd: "2016-11-01",
-      implementationReportURI: "http://tidoust.github.io/media-source-testcoverage/",
+      //lcEnd: "2016-08-10",
+      //prEnd: "2016-11-01",
+      //implementationReportURI: "http://tidoust.github.io/media-source-testcoverage/",
 
       noIDLIn: true,
 
@@ -96,22 +102,24 @@
       otherLinks: [{
       key: 'Repository',
       data: [{
-        value: 'We are on GitHub',
-        href: 'https://github.com/w3c/media-source/'
+        value: 'We are on GitHub, with incubations in per-feature branches',
+        href: 'https://github.com/wicg/media-source/'
       }, {
-        value: 'File a bug',
+        value: 'File a bug - vNext feature incubations use the upstream W3C spec issue tracker',
         href: 'https://github.com/w3c/media-source/issues'
-      }, {
+      }, /*{
         value: 'Commit history',
         href: 'https://github.com/w3c/media-source/commits/gh-pages/media-source-respec.html'
-      }]
-    },{
+      }*/]
+    },
+    /*{
       key: 'Mailing list',
       data: [{
         value: 'public-html-media@w3.org',
         href: 'https://lists.w3.org/Archives/Public/public-html-media/'
       }]
-    },{
+    },*/
+    {
       key: 'Implementation',
       data: [{
         value: 'Can I use Media Source Extensions?',
@@ -171,12 +179,10 @@
   <body>
 
     <section id="sotd">
-        <p>The working group maintains <a href="https://github.com/w3c/media-source/issues">a list of all bug reports</a>. New features for this specification are expected to be incubated in the <a href='https://www.w3.org/community/wicg/'>Web Platform Incubator Community Group</a>.</p>
-        <p>One editorial issue (<a href='https://github.com/w3c/media-source/issues/168'>removing the exposure of <code>createObjectURL(mediaSource)</code> in workers</a>) was addressed since the previous publication. For the list of changes done since the previous version, see the <a href='https://github.com/w3c/media-source/commits/gh-pages'>commits</a>.</p>
-        <p>
-          By publishing this Recommendation, W3C expects the functionality specified in this Recommendation will not be affected by changes to File API. The Working Group will continue to track these specifications.
-        </p>
-
+        <p>This specification outlines new feature(s) on top of the REC spec, which was published by the <a href='https://www.w3.org/html/wg/'>HTML Media Extensions Working Group</a>.</p>
+        <!-- For feature-specific sub-branches, update the following paragraph. -->
+        <p>Currently, this specification contains only a common baseline for new feature incubations.</p>
+        <p>See also <a href="https://github.com/WICG/media-source/blob/gh-pages/README.md"> the list of features being incubated currently on per-feature github branches</a>.</p>
     </section>
 
     <section id="abstract">
