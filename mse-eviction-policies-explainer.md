@@ -279,5 +279,5 @@ do not correspond to the MSE REC "normal" `EvictionPolicy`.
 
 ###### Initial Thoughts:
 
-Suggestions are welcome. Initially these were "live" and "LL-CMAF", but those
+Suggestions are welcome. Initially these were "LL-CMAF" and "live", but those
 were not very self-descriptive.
