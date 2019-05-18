@@ -225,7 +225,7 @@ equivalent to the "normal" policy.
 
 Note: In discussion at recent FOMS 2018 and 2019 conferences, this policy was
 loosely referred to as one which allows MSE to play "infinite GOP" streams such
-as a stream which has only one keyframe followed by only 
+as a stream which has only one keyframe followed by only non-keyframes.
 
 ### Additional changes necessary due to "before-next-demuxed"
 
@@ -274,3 +274,10 @@ case.
 Alternatively, switching always to "auto" as initial policy could impair
 existing interop if existing MSE implementations prefer different policies that
 do not correspond to the MSE REC "normal" `EvictionPolicy`.
+
+##### Are there better names than "before-current-gop" and "before-next-demuxed"
+
+###### Initial Thoughts:
+
+Suggestions are welcome. Initially these were "live" and "LL-CMAF", but those
+were not very self-descriptive.
