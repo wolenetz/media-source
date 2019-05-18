@@ -182,12 +182,12 @@ general non-normative guidance is proposed for this policy:
      last appended position and the most recent random access point before the
      current playback time.
   2. If there is an unsatisfied pending seek:
-     1. Consider removing data earlier than the seek target in the presentation
+     1. Consider removing GOPs earlier than the seek target in the presentation
         timeline. If the seek target is actually buffered (but not yet decoded
         sufficiently to satisfy the seek), do not remove anything between the
         most recent random access point at or before the the seek target and the
         seek target.
-     2. Consider removing data from the end of the presentation timeline,
+     2. Consider removing GOPs from the end of the presentation timeline,
         backwards, until either the seek target or the most recently appended
         GOP, exclusively.
      3. Consider greedily removing GOPs from the front of the presentation
