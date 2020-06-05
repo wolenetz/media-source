@@ -1,26 +1,35 @@
-# Media Source Extensions: MediaSourceHandle Explainer
-## (also known as MSE-in-Workers)
+# Media Source Extensions: MSE-in-Workers Explainer
 
-###### Author: Matthew Wolenetz, [Google Inc.](www.google.com) - December 17, 2018.  Last update December 17, 2018.
+###### Author: Matthew Wolenetz, [Google Inc.](www.google.com) - December 17, 2018.  Last update June 5, 2020.
+
+Please note this updated version no longer adds a `MediaSourceHandle` object.
+This updated version also is limited to expanding MSE usage beyond the main
+thread to just a `DedicatedWorker` context (not also a `SharedWorker` context.)
+Further, this updated version drops the 'early-open' portion.
+These were removed as major simplifications, and are not precluded from being
+proposed again in future (especially the 'early-open' functionality.)
 
 ## tl;dr
 
-We propose adding a `MediaSourceHandle` object, creatable on either the main
-document `Window` context, a `DedicatedWorker` context, or a `SharedWorker`
-context. This object's design intends to allow both:
+We propose enabling Dedicated Web Workers to be able to create `MediaSource`
+objects and `MediaSource` objectURLs. They may then `postMessage` or otherwise
+communicate those objectURLs to the main thread for use in attaching to media
+elements. The direct manipulation of the `MediaSource` and ancillary objects
+like `SourceBuffer` is allowed only from the context that originally created the
+`MediaSource` object. This allows both:
 
 * improved access to, and
 * improved performance of the [Media Source Extensions API](https://www.w3.org/TR/media-source/) (MSE).
 
-We plan to incubate this idea via the WICG, with goal of eventually working with
-an appropriate WG to get the result of WICG incubation as part of the next
+We are incubating this idea initially in the WICG, with goal of producing an
+experimental prototype implementation followed by specification in the next
 version of MSE.
 
 ### Implementation status as of last update
 
-* Chrome - spec'ing and prototyping underway.
-* Firefox - no signals yet.
-* Safari Technical Preview - no signals yet.
+* Chrome - prototyping underway.
+* Firefox - interest expressed in F2Fs.
+* Safari Technical Preview - interest expressed in F2Fs.
 * Current experimental web-platform-test results:
   * Pending further prototyping, etc.
 
@@ -55,85 +64,49 @@ this proposal:
 * Upgrading `HTMLMediaElement` (and its many related objects and APIs) to be
   usable on a Worker context. Though this might be a solution, the complexity of
   this approach led us to propose a simpler change scoped to just MSE.
+* Providing a new, transferable object, such as a `MediaSourceHandle` in lieu of
+  a `MediaSource` objectURL to enable attachment, for instance via the
+  `srcObject` attribute on an `HTMLMediaElement`.
+* Enabling usage of MSE API from `SharedWorker` or `ServiceWorker` contexts.
+* Providing an explicit method, such as `MediaSource.open()` to enable
+  applications to begin adding `SourceBuffer`s and starting initial
+  `appendBuffer()` operations on them prior to the attachment of the
+  `MediaSource` to an `HTMLMediaElement` completing.
 
 Note that this proposal does not preclude separate or subsequent effort to
 pursue these other ideas.
 
 ## Proposed Plan
 
-This proposal is focused on enabling earlier ability to create SourceBuffers and
-begin appending media to them, especially when the main `Window` context is
-frequently busy, with further improvements allowed by using the MSE API on
-`DedicatedWorker` and `SharedWorker` contexts.
+This proposal is focused on enabling `DedicatedWorker` usage of MSE API to
+improve application ability to buffer media for smoother playback despite a
+potentially busy main `Window` context. It does not change the pre-existing
+usability of the MSE API on the main `Window` context, for usage with
+`MediaSource` objects created on that main context.
 
 The REC version of [Media Source Extensions
 API](https://www.w3.org/TR/media-source/) (MSE) allows access to the API only on
-the main document `Window` context. It further requires `MediaSource` objects
-created by apps to initially be in the `closed` `readyState`, and prevents
-applications from successfully calling `addSourceBuffer()` and obtaining
-`SourceBuffer`s to begin buffering media until the `MediaSource` object
-transitions to `open` `readyState`. That transition is signaled by the
-`sourceopen` event, as a result of the potentially lengthy process of attaching
-to an `HTMLMediaElement` which requires at least one yielding of the main
-execution context before completion.
+the main document `Window` context. Further, the MSE API requires a
+`MediaSource` instance to first be "attached" to an `HTMLMediaElement` for that
+element to be extended by MSE and for the `MediaSource` to become `open` and
+allow further operations like `SourceBuffer` creation and manipulation. The
+"attachment" is started by creating a `MediaSource` objectURL, and then setting
+the `src` attribute of the `HTMLMediaElement` to be that objectURL.
 
 To maintain backwards compatibility with that behavior, while affording improved
-MSE API access and performance, this proposal adds a feature-detectable (by its
-existence and visibility) `MediaSourceHandle` object that is creatable on either
-the main document `Window` context, a `DedicatedWorker` context, or a
-`SharedWorker` context. A `MediaSourceHandle` object is
-[Transferable](https://developer.mozilla.org/en-US/docs/Web/API/Transferable),
-and can be used to attach the underlying `MediaSource` to an `HTMLMediaElement`
-by setting the `HTMLMediaElement`'s `srcObject` attribute to the
-`MediaSourceHandle`.
+MSE API access and performance, this proposal adds feature-detectable
+`MediaSource` constructor access to `DedicatedWorker` contexts. It also enables
+`MediaSource` objectURL creation on a `DedicatedWorker` context, and enables
+access to all of the MSE object model on `DedicatedWorker` context (for
+instances constructed there).
 
-Each `MediaSourceHandle`, when constructed, also constructs a `MediaSource` object
-that is available for retrieval by the app in the context that created the
-handle, thereby allowing `MediaSource`, `SourceBuffer`, `SourceBufferList`, etc.
-MSE API objects to be accessed by web apps on the context where the
-`MediaSourceHandle` was constructed.
-
-Unlike `MediaSource` objects directly constructed by apps, a `MediaSource`
-constructed for this handle is initially in the `open` `readyState`, even when
-the `MediaSourceHandle` has not yet been attached to an `HTMLMediaElement`.
-This allows earlier `addSourceBuffer()` and initial `appendBuffer()` calls to
-occur without first awaiting a `sourceopen` event on the `MediaSource`.
-
-Note that implementations may still delay action on asynchronous initial
-`appendBuffer()` calls until the `MediaSourceHandle` completes the attachment.
-
-Note also that once a `MediaSourceHandle` is detached from an `HTMLMediaElement`,
-the underlying `MediaSource` object's `readyState` becomes `closed` just like a
-normally detached `MediaSource`. While this prevents immediate ability to create
-new `SourceBuffers` for that `MediaSource`, the application can work around this
-by creating another `MediaSourceHandle`, retrieving the new underlying
-`MediaSource`, transferring the `MediaSourceHandle` to the main document
-`Window` context (if it wasn't created there), and attaching it to the
-`HTMLMediaElement`. The application could even prepare such in advance of a
-detachment.
-
+To prevent leakage of access cross-context by the
+app to the MSE object model, care will be taken especially to modify what the
+`Audio,Video,TextTrack` reports in the extended-by-MSE `sourceBuffer` attribute
+depending on which context is accessing the object: if not the same context as
+where the `MediaSource` was constructed, then that field will return `null`.
 
 ## Open Questions
-
-##### Why `srcObject` and not (also, or instead) an objectUrl src for attachment of a `MediaSourceHandle` to an `HTMLMediaElement`?
-
-###### Initial Thoughts:
-
-Using `URL.createObjectUrl(MediaSource)` is already problematic in modern web
-platform IDL due to MSE overloading a partial interface:
-[MSE spec issue](https://github.com/w3c/media-source/issues/211).
-Worse, MSE objectUrl usage already can lead to memory leaks if the
-application does not correctly `revokeObjectUrl()`.
-
-Since `srcObject` is the modern way in `HTMLMediaElement` to attach objects, we
-already have a way forward, so the proposal is to not unnecessarily add yet more
-problematic definition and usage of MediaSourceHandle objectUrls.
-
-Note: this is listed explicitly as an open question to help highlight that
-feedback on this aspect would especially be appreciated. Also, if making
-`MediaSourceHandle` `Transferable` is found to not be viable, we may need to
-reconsider routes like using an objectUrl.
-
 
 ##### Can implementations of this proposed API significantly reduce the performance problems and eliminate the API access problems versus REC MSE?
 
@@ -144,12 +117,12 @@ ergonomic API with improved interoperability are also strong reasons for
 incubation.
 
 
-##### Why must we create the `MediaSourceHandle` on a worker context if we wish to use the underlying `MediaSource` on that worker context? Why not instead allow (or require) the `MediaSourceHandle` to be constructed on the main `Window` context, and extracting something transferable from it to transfer to other contexts if needed there?
+##### Why must we create the `MediaSource` objectURL on a `DedicatedWorker` context if we wish to use the underlying `MediaSource` on that worker context? Why not instead use a transferable object, like a `MediaSourceHandle`, constructed on the main `Window` context, and extracting something transferable from it to transfer to other contexts if needed there?
 
 ###### Initial Thoughts:
 
 While this might allow some parallelization of attachment on the main document
-`Window` context while the `SharedWorker` or `DedicatedWorker` context is still
+`Window` context while the `DedicatedWorker` context is still
 starting, we're not convinced yet that the additional complexity is worth it.
 For example, using subworkers or other multi-worker arrangements communicating
 directly via the Channel Messaging API to reduce the granularity of priority worker
@@ -157,11 +130,11 @@ startup might be a reasonable workaround. This is another good reason
 to incubate.
 
 
-##### Can detachment of `MediaSourceHandle` not automatically shutdown all SourceBuffers (and remove all their buffered media?)
+##### Can detachment of `MediaSource` not automatically shutdown all SourceBuffers (and remove all their buffered media?)
 
 ###### Initial Thoughts:
 
 Perhaps, but an orthogonal feature proposal to let an app explicitly request a
-MediaSource object to behave differently on detach of it (or in this case, its
-handle) would reduce the complexity of each proposal and let them be developed
+MediaSource object to behave differently on detach of it
+would reduce the complexity of each proposal and let them be developed
 in parallel or separately.
