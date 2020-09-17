@@ -1,6 +1,6 @@
 # Media Source Extensions: MSE-in-Workers Explainer
 
-###### Author: Matthew Wolenetz, [Google Inc.](www.google.com) - December 17, 2018.  Last update June 5, 2020.
+###### Author: Matthew Wolenetz, [Google Inc.](https://www.google.com/) - December 17, 2018.  Last update June 5, 2020.
 
 Please note this updated version no longer adds a `MediaSourceHandle` object.
 This updated version also is limited to expanding MSE usage beyond the main
