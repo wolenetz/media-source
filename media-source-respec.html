@@ -310,7 +310,7 @@
           <p class="note">JavaScript applications SHOULD use this status code to terminate playback with a decode error. For example, if a parsing error occurs while processing out-of-band media data.</p>
         </td></tr></tbody></table></div>
 
-<pre class="idl">[Exposed=Window]
+<pre class="idl">[Exposed=(Window,DedicatedWorker)]
 interface MediaSource : EventTarget {
     constructor();
     readonly        attribute SourceBufferList    sourceBuffers;
@@ -911,7 +911,7 @@ interface MediaSource : EventTarget {
           </p>
         </td></tr></tbody></table>
 
-<pre class="idl">[Exposed=Window]
+<pre class="idl">[Exposed=(Window,DedicatedWorker)]
 interface SourceBuffer : EventTarget {
                     attribute AppendMode          mode;
     readonly        attribute boolean             updating;
@@ -2085,7 +2085,7 @@ interface SourceBuffer : EventTarget {
     <section id="sourcebufferlist">
       <h2><dfn>SourceBufferList</dfn> Object</h2>
       <p>SourceBufferList is a simple container object for <a>SourceBuffer</a> objects. It provides read-only array access and fires events when the list is modified.</p>
-<pre class="idl">[Exposed=Window]
+<pre class="idl">[Exposed=(Window,DedicatedWorker)]
 interface SourceBufferList : EventTarget {
     readonly        attribute unsigned long length;
                     attribute EventHandler  onaddsourcebuffer;
@@ -2426,6 +2426,13 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
+          <!-- BIG TODO: note around expected buffered and seekable values for a media element attached to a worker mediasource whose worker has been terminated -->
+          <!-- BIG TODO: add example for DedicatedWorker usage -->
+          <!-- BIG TODO: note possibility for additional readyState (closing or similar) -->
+          <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions, when MSEIW: Make SourceBuffer nullable attribute; other contexts must not be able to get non-null from a SourceBuffer-produced track from a different context like DedicatedWorker, init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
+          <!-- BIG TODO: consider noting that none of the MSE objects themselves are transferrable; object URL and application-managed state is the only cross-context comm visible to app (except side-effects of media element, such as sourceopen event, errors, closing, etc. inherent to the API and exposed directly by the API or the HTMLMediaElement API -->
+          <!-- BIG TODO: note parts like currentTime or other metadata currently proxied or cached in the CTMSA in Chrome - consider and specify more generally where necessary: element error? track addition? track removal? buffered & seekable (cache is good enough, impl may choose faster)?) -->
+          <!-- BIG TODO: or is fuller specification of something like a CTMSA necessary? Hopefully not... -->
         </div>
       </div>
     </section>
