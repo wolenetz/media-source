@@ -14,7 +14,10 @@
       // the specification's short name, as in https://www.w3.org/TR/short-name/
       shortName: "media-source",
 
-      // if there a publicly available Editor's Draft, this is the link
+      // If there's a publicly available Editor's Draft, this is the link.
+      // Though the 'github' respecConfig key now duplicates this functionality, this key
+      // is still needed for media-source.js preprocessing for detecting if the
+      // including respec source is a main spec or one of the byte-stream specs.
       edDraftURI:           "https://w3c.github.io/media-source/",
 
       // if this is a LCWD, uncomment and set the end of its review period
@@ -2164,15 +2167,43 @@ interface SourceBufferList : EventTarget {
       <p>This section specifies what existing attributes on the {{HTMLMediaElement}} MUST return when a <a>MediaSource</a> is attached to the element.</p>
 
       <p>The {{HTMLMediaElement}}.{{HTMLMediaElement/seekable}} attribute returns a new static <a def-id="normalized-timeranges-object"></a> created based on the following steps:</p>
+      <ol>
+        <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively ee the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
+          <dl class="switch">
+            <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
+            <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable range</var> to be [=live seekable range=].</dd>
+            <dt>Otherwise:</dt>
+            <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be the what
+            {{MediaSource/duration}} and [=live seekable range=] were recently, with no greater delay than
+            what would be perceived by a message listener in {{Window}} if the
+            most recent update to {{MediaSource/duration}} or [=live seekable range=] had been sent
+            from the {{DedicatedWorkerGlobalScope}} to the {{Window}} using
+            {{DedicatedWorkerGlobalScope/postMessage(message, options)}}.</dd>
+            <p class="note">
+              This allowance for delay acknowledges that the
+              {{HTMLMediaElement}} may not have direct access to the current
+              value of {{MediaSource/duration}} or [=live seekable range=] when
+              the {{MediaSource}} is in a different execution environment.
+              Instead of forcing all implementations to block multiple
+              execution environments until the {{HTMLMediaElement}} can
+              reliably retrieve the precise current value of
+              {{MediaSource/duration}}, this allowance lets both proceed under
+              assumptions of message passing coherency that are no worse than
+              what is allowed to the application code running in these
+              different execution environments.</p>
+          </dl>
+        </li>
+        <li>
+
       <dl class="switch">
-        <dt>If {{MediaSource/duration}} equals NaN:</dt>
+        <dt>If <var>recent duration</var> equals NaN:</dt>
         <dd>Return an empty {{TimeRanges}} object.</dd>
-        <dt>If {{MediaSource/duration}} equals positive Infinity:</dt>
+        <dt>If <var>recent duration</var> equals positive Infinity:</dt>
         <dd>
           <ol>
-            <li>If [=live seekable range=] is not empty:
+            <li>If <var>recent live seekable range</var> is not empty:
               <ol>
-                <li>Let <var>union ranges</var> be the union of [=live seekable range=] and the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
+                <li>Let <var>union ranges</var> be the union of <var>recent live seekable range</var> and the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
                 <li>Return a single range with a start time equal to the earliest start time in <var>union ranges</var> and an end time equal to the highest end time in <var>union ranges</var> and abort these steps.</li>
               </ol>
             </li>
@@ -2181,8 +2212,9 @@ interface SourceBufferList : EventTarget {
             <li>Return a single range with a start time of 0 and an end time equal to the highest end time reported by the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.
         </li></ol></dd>
         <dt>Otherwise:</dt>
-        <dd>Return a single range with a start time of 0 and an end time equal to {{MediaSource/duration}}.</dd>
+        <dd>Return a single range with a start time of 0 and an end time equal to <var>recent duration</var>.</dd>
       </dl>
+        </li></ol>
 
       <p id="dom-htmlmediaelement.buffered">The {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns a static <a def-id="normalized-timeranges-object"></a> based on the following steps.</p>
       <ol>
@@ -2422,12 +2454,12 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
+          <!-- BIG TODO: update the HTMLMediaElement.buffered extensions similar to the already-updated .seekable extensions text -->
           <!-- BIG TODO: note around expected buffered and seekable values for a media element attached to a worker mediasource whose worker has been terminated -->
           <!-- BIG TODO: add example for DedicatedWorker usage -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions, when MSEIW: Make SourceBuffer nullable attribute; other contexts must not be able to get non-null from a SourceBuffer-produced track from a different context like DedicatedWorker, init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: consider noting that none of the MSE objects themselves are transferrable; object URL and application-managed state is the only cross-context comm visible to app (except side-effects of media element, such as sourceopen event, errors, closing, etc. inherent to the API and exposed directly by the API or the HTMLMediaElement API -->
           <!-- BIG TODO: note parts like currentTime or other metadata currently proxied or cached in the CTMSA in Chrome - consider and specify more generally where necessary: element error? track addition? track removal? buffered & seekable (cache is good enough, impl may choose faster)?) -->
-          <!-- BIG TODO: or is fuller specification of something like a CTMSA necessary? Hopefully not... -->
         </div>
       </div>
     </section>
