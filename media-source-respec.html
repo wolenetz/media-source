@@ -78,6 +78,8 @@
 
       scheme: "https",
 
+      github: "w3c/media-source",
+
       otherLinks: [{
       key: 'Repository',
       data: [{
@@ -291,13 +293,19 @@
     "closed",
     "open",
     "ended"
-};</pre><table class="simple" data-dfn-for="ReadyState"><tbody><tr><th colspan="2">Enumeration description</th></tr><tr><td><dfn><code id="idl-def-ReadyState.closed">closed</code></dfn></td><td>
+};</pre><table class="simple" data-dfn-for="ReadyState"><tbody><tr><th colspan="2">Enumeration description</th></tr>
+        <tr><td><dfn><code id="idl-def-ReadyState.closed">closed</code></dfn></td><td>
           Indicates the source is not currently attached to a media element.
-        </td></tr><tr><td><dfn><code id="idl-def-ReadyState.open">open</code></dfn></td><td>
+        </td></tr>
+        <tr><td><dfn><code id="idl-def-ReadyState.open">open</code></dfn></td><td>
           The source has been opened by a media element and is ready for data to be appended to the <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}.
         </td></tr><tr><td><dfn><code id="idl-def-ReadyState.ended">ended</code></dfn></td><td>
           The source is still attached to a media element, but {{MediaSource/endOfStream()}} has been called.
         </td></tr></tbody></table></div>
+
+      <div class="issue" data-number="276">
+          <p>Consider adding a "<code>closing</code>" {{MediaSource/ReadyState}} to indicate the source is in the process of being concurrently detached from a media element. This would be useful for some implementations of {{MediaSource}} and {{SourceBuffer}} in {{DedicatedWorkerGlobalScope}}.</p>
+      </div>
 
       <div><pre class="idl">enum EndOfStreamError {
     "network",
@@ -2428,7 +2436,6 @@ interface SourceBufferList : EventTarget {
           </pre>
           <!-- BIG TODO: note around expected buffered and seekable values for a media element attached to a worker mediasource whose worker has been terminated -->
           <!-- BIG TODO: add example for DedicatedWorker usage -->
-          <!-- BIG TODO: note possibility for additional readyState (closing or similar) -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions, when MSEIW: Make SourceBuffer nullable attribute; other contexts must not be able to get non-null from a SourceBuffer-produced track from a different context like DedicatedWorker, init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: consider noting that none of the MSE objects themselves are transferrable; object URL and application-managed state is the only cross-context comm visible to app (except side-effects of media element, such as sourceopen event, errors, closing, etc. inherent to the API and exposed directly by the API or the HTMLMediaElement API -->
           <!-- BIG TODO: note parts like currentTime or other metadata currently proxied or cached in the CTMSA in Chrome - consider and specify more generally where necessary: element error? track addition? track removal? buffered & seekable (cache is good enough, impl may choose faster)?) -->
@@ -2436,6 +2443,7 @@ interface SourceBufferList : EventTarget {
         </div>
       </div>
     </section>
+
 
     <section id="acknowledgements">
       <h2>Acknowledgments</h2>
@@ -2445,6 +2453,10 @@ interface SourceBufferList : EventTarget {
     <section id="VideoPlaybackQuality" class="appendix informative">
       <h2>VideoPlaybackQuality</h2>
       The video playback quality metrics described in previous revisions of this specification (e.g., sections 5 and 10 of the <a href="https://www.w3.org/TR/2016/CR-media-source-20160705/">Candidate Recommendation</a>) are now being developed as part of [[MEDIA-PLAYBACK-QUALITY]]. Some implementations may have implemented the earlier draft <code>VideoPlaybackQuality</code> object and the {{HTMLVideoElement}} extension method <code>getVideoPlaybackQuality()</code> described in those previous revisions.
+    </section>
+
+    <section class="appendix" id="issue-summary">
+      <!-- A list of issues will magically appear here -->
     </section>
   </body>
 </html>
