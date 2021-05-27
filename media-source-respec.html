@@ -2166,81 +2166,121 @@ interface SourceBufferList : EventTarget {
       <h2>HTMLMediaElement Extensions</h2>
       <p>This section specifies what existing attributes on the {{HTMLMediaElement}} MUST return when a <a>MediaSource</a> is attached to the element.</p>
 
-      <p>The {{HTMLMediaElement}}.{{HTMLMediaElement/seekable}} attribute returns a new static <a def-id="normalized-timeranges-object"></a> created based on the following steps:</p>
-      <ol>
-        <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively ee the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
-          <dl class="switch">
-            <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
-            <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable range</var> to be [=live seekable range=].</dd>
-            <dt>Otherwise:</dt>
-            <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be the what
-            {{MediaSource/duration}} and [=live seekable range=] were recently, with no greater delay than
-            what would be perceived by a message listener in {{Window}} if the
-            most recent update to {{MediaSource/duration}} or [=live seekable range=] had been sent
-            from the {{DedicatedWorkerGlobalScope}} to the {{Window}} using
-            {{DedicatedWorkerGlobalScope/postMessage(message, options)}}.</dd>
-            <p class="note">
-              This allowance for delay acknowledges that the
-              {{HTMLMediaElement}} may not have direct access to the current
-              value of {{MediaSource/duration}} or [=live seekable range=] when
-              the {{MediaSource}} is in a different execution environment.
-              Instead of forcing all implementations to block multiple
-              execution environments until the {{HTMLMediaElement}} can
-              reliably retrieve the precise current value of
-              {{MediaSource/duration}}, this allowance lets both proceed under
-              assumptions of message passing coherency that are no worse than
-              what is allowed to the application code running in these
-              different execution environments.</p>
-          </dl>
-        </li>
-        <li>
+      <section id="htmlmediaelement-extensions-seekable">
+        <h3>{{HTMLMediaElement}}.{{HTMLMediaElement/seekable}}</h3>
+        <p>The {{HTMLMediaElement}}.{{HTMLMediaElement/seekable}} attribute returns a new static <a def-id="normalized-timeranges-object"></a> created based on the following steps:</p>
+        <ol>
+          <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively be the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
+            <dl class="switch">
+              <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
+              <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable range</var> to be [=live seekable range=].</dd>
+              <dt>Otherwise:</dt>
+              <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be what the
+              {{MediaSource/duration}} and [=live seekable range=] were recently, with no greater delay than
+              what would be perceived by a message listener in {{Window}} if the
+              most recent update to {{MediaSource/duration}} or [=live seekable range=] had been sent
+              from the {{DedicatedWorkerGlobalScope}} to the {{Window}} using
+              {{DedicatedWorkerGlobalScope/postMessage(message, options)}}.</dd>
+              <p class="note">
+                This allowance for delay acknowledges that the
+                {{HTMLMediaElement}} may not have direct access to the current
+                values of {{MediaSource/duration}} and [=live seekable range=] when
+                the {{MediaSource}} is in a different execution environment.
+                Instead of forcing all implementations to block multiple
+                execution environments until the {{HTMLMediaElement}} can
+                reliably retrieve the precise current values of
+                {{MediaSource/duration}} and [=live seekable range=], this
+                allowance lets both proceed under assumptions of message passing
+                coherency that are no worse than what is allowed to the
+                application code running in these different execution
+                environments.</p>
+            </dl>
+          </li>
+          <li>
+            <dl class="switch">
+              <dt>If <var>recent duration</var> equals NaN:</dt>
+              <dd>Return an empty {{TimeRanges}} object.</dd>
+              <dt>If <var>recent duration</var> equals positive Infinity:</dt>
+              <dd>
+                <ol>
+                  <li>If <var>recent live seekable range</var> is not empty:
+                    <ol>
+                      <li>Let <var>union ranges</var> be the union of <var>recent live seekable range</var> and the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
+                      <li>Return a single range with a start time equal to the earliest start time in <var>union ranges</var> and an end time equal to the highest end time in <var>union ranges</var> and abort these steps.</li>
+                    </ol>
+                  </li>
+                  <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns an empty {{TimeRanges}}
+                    object, then return an empty {{TimeRanges}} object and abort these steps.</li>
+                  <li>Return a single range with a start time of 0 and an end time equal to the highest end time reported by the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.
+              </li></ol></dd>
+              <dt>Otherwise:</dt>
+              <dd>Return a single range with a start time of 0 and an end time equal to <var>recent duration</var>.</dd>
+            </dl>
+          </li>
+        </ol>
+      </section>
 
-      <dl class="switch">
-        <dt>If <var>recent duration</var> equals NaN:</dt>
-        <dd>Return an empty {{TimeRanges}} object.</dd>
-        <dt>If <var>recent duration</var> equals positive Infinity:</dt>
-        <dd>
-          <ol>
-            <li>If <var>recent live seekable range</var> is not empty:
+      <section id="htmlmediaelement-extensions-buffered">
+        <h3>{{HTMLMediaElement}}.{{HTMLMediaElement/buffered}}</h3>
+        <p id="dom-htmlmediaelement.buffered">The {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns a static <a def-id="normalized-timeranges-object"></a> based on the following steps.</p>
+        <ol>
+          <li>Let <var>recent intersection ranges</var> be determined as follows:
+            <dl class="switch">
+              <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
               <ol>
-                <li>Let <var>union ranges</var> be the union of <var>recent live seekable range</var> and the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
-                <li>Return a single range with a start time equal to the earliest start time in <var>union ranges</var> and an end time equal to the highest end time in <var>union ranges</var> and abort these steps.</li>
+                <li>Let <var>recent intersection ranges</var> equal an empty {{TimeRanges}} object.</li>
+                <li>If {{MediaSource/activeSourceBuffers}}.length does not equal 0 then run the following steps:
+                  <ol>
+                    <li>Let <var>active ranges</var> be the ranges returned by {{SourceBuffer/buffered}} for each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}}.</li>
+                    <li>Let <var>highest end time</var> be the largest range end time in the <var>active ranges</var>.</li>
+                    <li>Let <var>recent intersection ranges</var> equal a {{TimeRanges}} object containing a single range from 0 to <var>highest end time</var>.</li>
+                    <li>For each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}} run the following steps:
+                      <ol>
+                        <li>Let <var>source ranges</var> equal the ranges returned by the {{SourceBuffer/buffered}} attribute on the current <a>SourceBuffer</a>.</li>
+                        <li>If {{MediaSource/readyState}} is {{ReadyState/""ended""}}, then set the end time on the last range in <var>source ranges</var> to
+                          <var>highest end time</var>.</li>
+                        <li>Let <var>new intersection ranges</var> equal the intersection between the <var>recent intersection ranges</var> and the <var>source ranges</var>.</li>
+                        <li>Replace the ranges in <var>recent intersection ranges</var> with the <var>new intersection ranges</var>.</li>
+                      </ol>
+                    </li>
+                  </ol>
+                </li>
               </ol>
-            </li>
-            <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns an empty {{TimeRanges}}
-              object, then return an empty {{TimeRanges}} object and abort these steps.</li>
-            <li>Return a single range with a start time of 0 and an end time equal to the highest end time reported by the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.
-        </li></ol></dd>
-        <dt>Otherwise:</dt>
-        <dd>Return a single range with a start time of 0 and an end time equal to <var>recent duration</var>.</dd>
-      </dl>
-        </li></ol>
-
-      <p id="dom-htmlmediaelement.buffered">The {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns a static <a def-id="normalized-timeranges-object"></a> based on the following steps.</p>
-      <ol>
-        <li>Let <var>intersection ranges</var> equal an empty {{TimeRanges}} object.</li>
-        <li>If {{MediaSource/activeSourceBuffers}}.length does not equal 0 then run the following steps:
-          <ol>
-            <li>Let <var>active ranges</var> be the ranges returned by {{SourceBuffer/buffered}} for each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}}.</li>
-            <li>Let <var>highest end time</var> be the largest range end time in the <var>active ranges</var>.</li>
-            <li>Let <var>intersection ranges</var> equal a {{TimeRanges}} object containing a single range from 0 to <var>highest end time</var>.</li>
-            <li>For each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}} run the following steps:
-              <ol>
-                <li>Let <var>source ranges</var> equal the ranges returned by the {{SourceBuffer/buffered}} attribute on the current <a>SourceBuffer</a>.</li>
-                <li>If {{MediaSource/readyState}} is {{ReadyState/""ended""}}, then set the end time on the last range in <var>source ranges</var> to
-                  <var>highest end time</var>.</li>
-                <li>Let <var>new intersection ranges</var> equal the intersection between the <var>intersection ranges</var> and the <var>source ranges</var>.</li>
-                <li>Replace the ranges in <var>intersection ranges</var> with the <var>new intersection ranges</var>.</li>
-              </ol>
-            </li>
-          </ol>
-        </li>
-        <li>If the current value of this attribute has not been set by this algorithm or
-          <var>intersection ranges</var> does not contain the exact same range information as the
-          current value of this attribute, then update the current value of this attribute to
-          <var>intersection ranges</var>.
-        </li><li>Return the current value of this attribute.</li>
-      </ol>
+              <dt>Otherwise:</dt>
+              <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}}
+              resulting from the above algorithm for {{Window}}, but run with the
+              {{MediaSource}} and its {{SourceBuffer}} objects in their
+              {{DedicatedWorkerGlobalScope}} and communicated to the {{Window}}
+              with no greater delay than what would be perceived by a message
+              listener in {{Window}} if the most recent update to the
+              {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}},
+              and any of the buffering state that would change any of the values
+              of each of those {{SourceBuffer/buffered}} attributes of the
+              {{MediaSource/activeSourceBuffers}} had triggered recalculation and
+              transmission to the {{Window}} of the resulting
+              {{TimeRanges}}.</dd>
+              <p class="note">
+                This allowance for delay acknowledges that the
+                {{HTMLMediaElement}} may not have direct access to the current
+                state of the {{MediaSource}} and all of the {{SourceBuffer}}
+                objects in its {{MediaSource/activeSourceBuffers}} when the
+                {{MediaSource}} is in a different execution environment. Instead
+                of forcing all implementations to block multiple execution
+                environments until the {{HTMLMediaElement}} can reliably retrieve
+                the precise information necessary to calculate <var>recent
+                intersection ranges</var>, this allowance lets both proceed under
+                assumptions of message passing coherency that are no worse than
+                what is allowed to the application code running in these different
+                execution environments.</p>
+            </dl>
+          </li>
+          <li>If the current value of this attribute has not been set by this algorithm or
+            <var>recent intersection ranges</var> does not contain the exact same range information as the
+            current value of this attribute, then update the current value of this attribute to
+            <var>recent intersection ranges</var>.
+          </li><li>Return the current value of this attribute.</li>
+        </ol>
+      </section>
     </section>
 
     <section id="audio-track-extensions">
@@ -2454,7 +2494,6 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
-          <!-- BIG TODO: update the HTMLMediaElement.buffered extensions similar to the already-updated .seekable extensions text -->
           <!-- BIG TODO: note around expected buffered and seekable values for a media element attached to a worker mediasource whose worker has been terminated -->
           <!-- BIG TODO: add example for DedicatedWorker usage -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions, when MSEIW: Make SourceBuffer nullable attribute; other contexts must not be able to get non-null from a SourceBuffer-produced track from a different context like DedicatedWorker, init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
