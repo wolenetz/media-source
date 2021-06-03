@@ -2254,11 +2254,13 @@ interface SourceBufferList : EventTarget {
               with no greater delay than what would be perceived by a message
               listener in {{Window}} if the most recent update to the
               {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}},
-              and any of the buffering state that would change any of the values
-              of each of those {{SourceBuffer/buffered}} attributes of the
-              {{MediaSource/activeSourceBuffers}} had triggered recalculation and
-              transmission to the {{Window}} of the resulting
-              {{TimeRanges}}.</dd>
+              and any of the buffering state that would change any of the
+              values of each of those {{SourceBuffer/buffered}} attributes of
+              the {{MediaSource/activeSourceBuffers}} had triggered
+              recalculation and transmission to the {{Window}} from the
+              {{DedicatedWorkerGlobalScope}} using
+              {{DedicatedWorkerGlobalScope/postMessage(message,options)}} of a
+              serialized form of the resulting {{TimeRanges}}.</dd>
               <p class="note">
                 This allowance for delay acknowledges that the
                 {{HTMLMediaElement}} may not have direct access to the current
