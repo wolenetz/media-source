@@ -2170,10 +2170,34 @@ interface SourceBufferList : EventTarget {
         <h3>{{HTMLMediaElement}}.{{HTMLMediaElement/seekable}}</h3>
         <p>The {{HTMLMediaElement}}.{{HTMLMediaElement/seekable}} attribute returns a new static <a def-id="normalized-timeranges-object"></a> created based on the following steps:</p>
         <ol>
+          <li>If the {{MediaSource}} was constructed in a
+            {{DedicatedWorkerGlobalScope}} that is terminated or is closing
+            then return an empty {{TimeRanges}} object and abort these steps.
+            <p class="note">
+              This case is intended to handle implementations that may no
+              longer maintain any previous information about buffered or
+              seekable media in a MediaSource that was constructed in a
+              DedicatedWorkerGlobalScope that has been terminated by
+              {{Worker/terminate()}} or user agent execution of [=terminate a
+              worker=] for the MediaSource's DedicatedWorkerGlobalScope, for
+              instance as the eventual result of
+              {{DedicatedWorkerGlobalScope/close()}} execution.
+            </p>
+            <div class="issue" data-number="277">
+              <p>Should there be some (eventual) media element error transition
+              in the case of an attached worker MediaSource having its context
+              destroyed? The experimental Chromium implementation of worker MSE
+              just keeps the element readyState, networkState and error the
+              same as prior to that context destruction, though the seekable
+              and buffered attributes each report an empty TimeRange.</p>
+            </div>
+          </li>
+
           <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively be the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
               <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable range</var> to be [=live seekable range=].</dd>
+
               <dt>Otherwise:</dt>
               <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be what the
               {{MediaSource/duration}} and [=live seekable range=] were recently, with no greater delay than
@@ -2224,6 +2248,29 @@ interface SourceBufferList : EventTarget {
         <h3>{{HTMLMediaElement}}.{{HTMLMediaElement/buffered}}</h3>
         <p id="dom-htmlmediaelement.buffered">The {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns a static <a def-id="normalized-timeranges-object"></a> based on the following steps.</p>
         <ol>
+          <li>If the {{MediaSource}} was constructed in a
+            {{DedicatedWorkerGlobalScope}} that is terminated or is closing
+            then return an empty {{TimeRanges}} object and abort these steps.
+            <p class="note">
+              This case is intended to handle implementations that may no
+              longer maintain any previous information about buffered or
+              seekable media in a MediaSource that was constructed in a
+              DedicatedWorkerGlobalScope that has been terminated by
+              {{Worker/terminate()}} or user agent execution of [=terminate a
+              worker=] for the MediaSource's DedicatedWorkerGlobalScope, for
+              instance as the eventual result of
+              {{DedicatedWorkerGlobalScope/close()}} execution.
+            </p>
+            <div class="issue" data-number="277">
+              <p>Should there be some (eventual) media element error transition
+              in the case of an attached worker MediaSource having its context
+              destroyed? The experimental Chromium implementation of worker MSE
+              just keeps the element readyState, networkState and error the
+              same as prior to that context destruction, though the seekable
+              and buffered attributes each report an empty TimeRange.</p>
+            </div>
+          </li>
+
           <li>Let <var>recent intersection ranges</var> be determined as follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
@@ -2496,7 +2543,6 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
-          <!-- BIG TODO: note around expected buffered and seekable values for a media element attached to a worker mediasource whose worker has been terminated -->
           <!-- BIG TODO: add example for DedicatedWorker usage -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions, when MSEIW: Make SourceBuffer nullable attribute; other contexts must not be able to get non-null from a SourceBuffer-produced track from a different context like DedicatedWorker, init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: consider noting that none of the MSE objects themselves are transferrable; object URL and application-managed state is the only cross-context comm visible to app (except side-effects of media element, such as sourceopen event, errors, closing, etc. inherent to the API and exposed directly by the API or the HTMLMediaElement API -->
