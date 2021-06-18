@@ -2355,7 +2355,7 @@ interface SourceBufferList : EventTarget {
             {{MediaSource/sourceBuffers}} attribute of its [=parent media
             source=].
           </div>
-          </p>
+        </p>
         </dd></dl></section></div>
     </section>
 
@@ -2592,10 +2592,12 @@ interface SourceBufferList : EventTarget {
 &lt;/script&gt;
           </pre>
           <!-- BIG TODO: consider abstracting out some algorithm/notion for "run algorithm Y on the HTMLMediaElement in the Window context" -->
+          <!-- BIG TODO: update the "detaching from a media element" algorithm to have the worker run the MSE steps in a message handler, note that
+            implementations may do this faster than message passing, and may immediately know in the worker that the detachment is incoming, hence potential
+            `closing` readyState -->
           <!-- BIG TODO: note element error notification cross-context from media element to MSE-in-worker may be delayed; should be at worst like onmessage handling in worker of an error state message transmitted to the worker by a hypothetical element onerror handler -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions (partially done, but need updates around this for "aliased" cross-thread track objects, and may need an issue to update TrackBase exposure/methods accordingly. Need at least to update init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
-          <!-- BIG TODO: add example for DedicatedWorker usage -->
-          <!-- BIG TODO: consider noting that none of the MSE objects themselves are transferrable; object URL and application-managed state is the only cross-context comm visible to app (except side-effects of media element, such as sourceopen event, errors, closing, etc. inherent to the API and exposed directly by the API or the HTMLMediaElement API -->
+          <!-- BIG TODO: consider referencing (in PR description maybe?) the demo: https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html -->
         </div>
       </div>
     </section>
