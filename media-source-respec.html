@@ -598,6 +598,40 @@ interface MediaSource : EventTarget {
         </table>
       </section>
 
+      <section id="mediasource-in-worker-communication-model">
+        <h3><dfn>Cross-context communication model</dfn></h3>
+
+        <p>When a {{Window}} {{HTMLMediaElement}} is attached to a {{DedicatedWorkerGlobalScope}} {{MediaSource}}, each context
+        has algorithms that depend on information from the other.</p>
+
+        <p class="note">{{HTMLMediaElement}} is exposed only to {{Window}} contexts, but {{MediaSource}} and related objects defined
+        in this specification are exposed in {{Window}} and {{DedicatedWorkerGlobalScope}} contexts. This lets
+        applications construct a {{MediaSource}} object in either of those types of context and attach it to an
+        {{HTMLMediaElement}} object in a {{Window}} context using a [=MediaSource object URL=] as described in the
+        [=attaching to a media element=] algorithm. A {{MediaSource}} object is not {{Transferable}}; it is only visible
+        in the context where it was created.</p>
+
+        The rest of this section describes a model for bounding information latency for attachments of a {{Window}}
+        media element to a {{DedicatedWorkerGlobalScope}} {{MediaSource}}. While the model describes communication using
+        message passing, implementations MAY choose to communicate in potentially faster ways, such as using shared
+        memory and locks. Attachments to a {{Window}} {{MediaSource}} synchronously have the information already without
+        communicating it across contexts.
+
+        <p>A {{MediaSource}} that is constructed in a {{DedicatedWorkerGlobalScope}} has an internal, unexposed
+        <dfn id="port-to-main">port to main</dfn> nullable variable that stores a {{MessagePort}} setup during
+        attachment and nulled during detachment. A {{Window}} {{MediaSource}}'s [=port to main=] is always null.</p>
+
+        </p>An {{HTMLMediaElement}} extended by this specification and attached to a {{DedicatedWorkerGlobalScope}}
+        {{MediaSource}} similarly has an internal, unexposed <dfn id="port-to-worker">port to worker</dfn> nullable
+        variable that stores a {{MessagePort}} setup during attachment and nulled during detachment. A
+        [=port to worker=] is always null unless attached to a {{DedicatedWorkerGlobalScope}} {{MediaSource}}.</p>
+
+        <p>Algorithms in this specification that need to communicate information from a {{Window}} {{HTMLMediaElement}}
+        to an attached {{DedicatedWorkerGlobalScope}} {{MediaSource}}, or vice versa, will use these internal ports
+        implicitly to post a message to their counterpart, where the implicit handler of the message runs steps as
+        described in the algorithms.</p>
+      </section>
+
       <section id="mediasource-algorithms">
         <h3>Algorithms</h3>
 
@@ -618,9 +652,35 @@ interface MediaSource : EventTarget {
             <dd>
               <ol>
                 <li>Set the media element's <a def-id="delaying-the-load-event-flag"></a> to false.</li>
-                <li>Set the {{MediaSource/readyState}} attribute to {{ReadyState/""open""}}.</li>
                 <li>
-                  [=Queue a task=] to [=fire an event=] named {{sourceopen}} at the <a>MediaSource</a>.</li>
+                  <dl class="switch">
+                    <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}, then setup worker
+                    attachment communication and open the {{MediaSource}}:</dt>
+                    <dd><ol>
+                      <li>Create an internal, unexposed {{MessageChannel}} <var>channel</var>.</li>
+                      <li>Set [=port to worker=] to the {{MessageChannel/port1}} value of <var>channel</var>.</li>
+                      <li>Execute [=StructuredSerializeWithTransfer=] with the {{MessageChannel/port2}} of
+                        <var>channel</var> as both the value and the sole member of the <var>transferList</var>, and let
+                        the result be <var>serialized port2</var>.
+                      <li>[=Queue a task=] on the {{MediaSource}}'s {{DedicatedWorkerGlobalScope}} that will
+                        <ol>
+                          <li>Execute [=StructuredDeserializeWithTransfer=] with <var>serialized port2</var> and
+                            {{DedicatedWorkerGlobalScope}}'s [=environment settings object/realm=], and set [=port to
+                            main=] to be the resulting deserialized clone of the transferred {{MessageChannel/port2}}
+                            value of <var>channel</var>.</li>
+                          <li>Set the {{MediaSource/readyState}} attribute to {{ReadyState/""open""}}.</li>
+                          <li>[=Queue a task=] to [=fire an event=] named {{sourceopen}} at the <a>MediaSource</a>.</li>
+                        </ol>
+                      </li>
+                    </ol></dd>
+                    <dt>Otherwise, the {{MediaSource}} was constructed in a {{Window}}:</dt>
+                    <dd><ol>
+                      <li>Set [=port to worker=] null.</li>
+                      <li>Set [=port to main=] null.</li>
+                      <li>Set the {{MediaSource/readyState}} attribute to {{ReadyState/""open""}}.</li>
+                      <li>[=Queue a task=] to [=fire an event=] named {{sourceopen}} at the <a>MediaSource</a>.</li>
+                    </ol></dd>
+                  </dl>
                 <li>Continue the <a def-id="resource-fetch-algorithm"></a> by running the remaining <a def-id="Otherwise-mode-is-local"></a> steps, with these clarifications:
                   <ol>
                     <li>Text in the <a def-id="resource-fetch-algorithm"></a> or the <a def-id="media-data-processing-steps-list"></a> that refers to "the download", "bytes received", or "whenever new data for the current media resource becomes available" refers to data passed in via {{SourceBuffer/appendBuffer()}}.</li>
@@ -638,6 +698,20 @@ interface MediaSource : EventTarget {
           <p>The following steps are run in any case where the media element is going to transition to <a def-id="videoref" name="dom-htmlmediaelement-network_empty">NETWORK_EMPTY</a> and [=queue a task=] to [=fire an event=] named <a def-id="videoref" name="eventdef-media-emptied">emptied</a> at the media element. These steps SHOULD be run right before the transition.</p>
 
           <ol>
+            <li>
+              <dl class="switch">
+                <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                <dd><ol>
+                  <li>Notify the {{MediaSource}} using an internal <code>detach</code> message posted to [=port to
+                      worker=].</li>
+                  <li>Set [=port to worker=] null.</li>
+                  <li>The implicit message handler for this <code>detach</code> notification runs the remainder of these
+                    steps in the {{DedicatedWorkerGlobalScope}} {{MediaSource}}.</li>
+                </ol></dd>
+                <dt>Otherwise, the {{MediaSource}} was constructed in a {{Window}}:</dt>
+                <dd>Continue the remainder of these steps on the {{Window}} {{MediaSource}}.</dd>
+              </dl></li>
+            <li>Set [=port to main=] null.</li>
             <li>Set the {{MediaSource/readyState}} attribute to {{ReadyState/""closed""}}.</li>
             <li>Update {{MediaSource/duration}} to NaN.</li>
             <li>Remove all the <a>SourceBuffer</a> objects from {{MediaSource/activeSourceBuffers}}.</li>
@@ -2196,28 +2270,13 @@ interface SourceBufferList : EventTarget {
           <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively be the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
-              <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable range</var> to be [=live seekable range=].</dd>
-
+              <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable
+                range</var> to be [=live seekable range=].</dd>
               <dt>Otherwise:</dt>
               <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be what the
-              {{MediaSource/duration}} and [=live seekable range=] were recently, with no greater delay than
-              what would be perceived by a message listener in {{Window}} if the
-              most recent update to {{MediaSource/duration}} or [=live seekable range=] had been sent
-              from the {{DedicatedWorkerGlobalScope}} to the {{Window}} using
-              {{DedicatedWorkerGlobalScope/postMessage(message, options)}}.</dd>
-              <p class="note">
-                This allowance for delay acknowledges that the
-                {{HTMLMediaElement}} may not have direct access to the current
-                values of {{MediaSource/duration}} and [=live seekable range=] when
-                the {{MediaSource}} is in a different execution environment.
-                Instead of forcing all implementations to block multiple
-                execution environments until the {{HTMLMediaElement}} can
-                reliably retrieve the precise current values of
-                {{MediaSource/duration}} and [=live seekable range=], this
-                allowance lets both proceed under assumptions of message passing
-                coherency that are no worse than what is allowed to the
-                application code running in these different execution
-                environments.</p>
+              {{MediaSource/duration}} and [=live seekable range=] were recently, updated by handling implicit messages posted by
+              the {{MediaSource}} to its [=port to main=] on every change to {{MediaSource/duration}} or [=live seekable
+              range=].</dd>
             </dl>
           </li>
           <li>
@@ -2294,33 +2353,17 @@ interface SourceBufferList : EventTarget {
                 </li>
               </ol>
               <dt>Otherwise:</dt>
-              <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}}
-              resulting from the above algorithm for {{Window}}, but run with the
-              {{MediaSource}} and its {{SourceBuffer}} objects in their
-              {{DedicatedWorkerGlobalScope}} and communicated to the {{Window}}
-              with no greater delay than what would be perceived by a message
-              listener in {{Window}} if the most recent update to the
-              {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}},
-              and any of the buffering state that would change any of the
-              values of each of those {{SourceBuffer/buffered}} attributes of
-              the {{MediaSource/activeSourceBuffers}} had triggered
-              recalculation and transmission to the {{Window}} from the
-              {{DedicatedWorkerGlobalScope}} using
-              {{DedicatedWorkerGlobalScope/postMessage(message,options)}} of a
-              serialized form of the resulting {{TimeRanges}}.</dd>
-              <p class="note">
-                This allowance for delay acknowledges that the
-                {{HTMLMediaElement}} may not have direct access to the current
-                state of the {{MediaSource}} and all of the {{SourceBuffer}}
-                objects in its {{MediaSource/activeSourceBuffers}} when the
-                {{MediaSource}} is in a different execution environment. Instead
-                of forcing all implementations to block multiple execution
-                environments until the {{HTMLMediaElement}} can reliably retrieve
-                the precise information necessary to calculate <var>recent
-                intersection ranges</var>, this allowance lets both proceed under
-                assumptions of message passing coherency that are no worse than
-                what is allowed to the application code running in these different
-                execution environments.</p>
+              <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}} resulting from the steps for the
+              {{Window}} case, but run with the {{MediaSource}} and its {{SourceBuffer}} objects in their
+              {{DedicatedWorkerGlobalScope}} {{Window}} and communicated by using [=port to main=] implicit messages on
+              every update to the {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}}, or any of the
+              buffering state that would change any of the values of each of those {{SourceBuffer/buffered}} attributes
+              of the {{MediaSource/activeSourceBuffers}}.
+              <p class="note">The overhead of recalculating and communicating <var>recent intersection ranges</var> so
+              frequently is one reason for allowing implementation flexibility to query this information on-demand using
+              other mechanisms such as shared memory and locks as mentioned in [=cross-context communication
+              model=].</p>
+              </dd>
             </dl>
           </li>
           <li>If the current value of this attribute has not been set by this algorithm or
@@ -2591,10 +2634,6 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
-          <!-- BIG TODO: consider abstracting out some algorithm/notion for "run algorithm Y on the HTMLMediaElement in the Window context" -->
-          <!-- BIG TODO: update the "detaching from a media element" algorithm to have the worker run the MSE steps in a message handler, note that
-            implementations may do this faster than message passing, and may immediately know in the worker that the detachment is incoming, hence potential
-            `closing` readyState -->
           <!-- BIG TODO: note element error notification cross-context from media element to MSE-in-worker may be delayed; should be at worst like onmessage handling in worker of an error state message transmitted to the worker by a hypothetical element onerror handler -->
           <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions (partially done, but need updates around this for "aliased" cross-thread track objects, and may need an issue to update TrackBase exposure/methods accordingly. Need at least to update init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: consider referencing (in PR description maybe?) the demo: https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html -->
