@@ -1004,8 +1004,11 @@ interface SourceBuffer : EventTarget {
     undefined abort ();
     undefined changeType (DOMString type);
     undefined remove (double start, unrestricted double end);
-};</pre><section><h2>Attributes</h2><dl class="attributes" data-dfn-for="SourceBuffer"><dt><dfn><code>mode</code></dfn> of type <a>AppendMode</a></dt><dd>
-<p>Controls how a sequence of [=media segments=] are handled. This attribute is initially set by {{MediaSource/addSourceBuffer()}} after the object is created, and can be updated by {{SourceBuffer/changeType()}} or setting this attribute.</p>
+};</pre>
+          <div class="issue" data-number="280">[[HTML]] {{AudioTrackList}}, {{VideoTrackList}} and {{TextTrackList}} need Window+DedicatedWorker
+          exposure.</div>
+          <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="SourceBuffer"><dt><dfn><code>mode</code></dfn> of type <a>AppendMode</a></dt><dd>
+          <p>Controls how a sequence of [=media segments=] are handled. This attribute is initially set by {{MediaSource/addSourceBuffer()}} after the object is created, and can be updated by {{SourceBuffer/changeType()}} or setting this attribute.</p>
           <p>On getting, Return the initial value or the last value that was successfully set.</p>
           <p>On setting, run the following steps:</p>
           <ol>
@@ -2378,10 +2381,13 @@ interface SourceBufferList : EventTarget {
     <section id="audio-track-extensions">
       <h2>AudioTrack Extensions</h2>
       <p>This section specifies extensions to the [[HTML]] {{AudioTrack}} definition.</p>
-
-      <div><pre class="idl">partial interface AudioTrack {
+      <div><pre class="idl">[Exposed=(Window,DedicatedWorker)]
+partial interface AudioTrack {
     readonly        attribute SourceBuffer? sourceBuffer;
-};</pre><section><h2>Attributes</h2><dl class="attributes" data-dfn-for="AudioTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
+};</pre>
+        <div class="issue" data-number="280">[[HTML]] {{AudioTrack}} needs Window+DedicatedWorker
+          exposure.</div>
+        <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="AudioTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
         <p>Returns the {{SourceBuffer}} that created this track.
            Returns null if this track was not created by a {{SourceBuffer}} or
            the {{SourceBuffer}} has been removed from the
@@ -2406,9 +2412,13 @@ interface SourceBufferList : EventTarget {
       <h2>VideoTrack Extensions</h2>
       <p>This section specifies extensions to the [[HTML]] {{VideoTrack}} definition.</p>
 
-      <div><pre class="idl">partial interface VideoTrack {
+      <div><pre class="idl">[Exposed=(Window,DedicatedWorker)]
+partial interface VideoTrack {
     readonly        attribute SourceBuffer? sourceBuffer;
-};</pre><section><h2>Attributes</h2><dl class="attributes" data-dfn-for="VideoTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
+};</pre>
+        <div class="issue" data-number="280">[[HTML]] {{VideoTrack}} needs Window+DedicatedWorker
+          exposure.</div>
+        <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="VideoTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
         <p>Returns the {{SourceBuffer}} that created this track.
            Returns null if this track was not created by a {{SourceBuffer}} or
            the {{SourceBuffer}} has been removed from the
@@ -2433,9 +2443,13 @@ interface SourceBufferList : EventTarget {
       <h2>TextTrack Extensions</h2>
       <p>This section specifies extensions to the [[HTML]] {{TextTrack}} definition.</p>
 
-      <div><pre class="idl">partial interface TextTrack {
+      <div><pre class="idl">[Exposed=(Window,DedicatedWorker)]
+partial interface TextTrack {
     readonly        attribute SourceBuffer? sourceBuffer;
-};</pre><section><h2>Attributes</h2><dl class="attributes" data-dfn-for="TextTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
+};</pre>
+        <div class="issue" data-number="280">[[HTML]] {{TextTrack}} needs Window+DedicatedWorker
+          exposure.</div>
+        <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="TextTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
         <p>Returns the {{SourceBuffer}} that created this track.
            Returns null if this track was not created by a {{SourceBuffer}} or
            the {{SourceBuffer}} has been removed from the
@@ -2634,8 +2648,9 @@ interface SourceBufferList : EventTarget {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
+          <!-- BIG TODO: AVT-track&tracklist: update init segment received, removesourcebuffer conditions need to
+            ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: note element error notification cross-context from media element to MSE-in-worker may be delayed; should be at worst like onmessage handling in worker of an error state message transmitted to the worker by a hypothetical element onerror handler -->
-          <!-- BIG TODO: note conditions on Audio/Video/TextTrack extensions (partially done, but need updates around this for "aliased" cross-thread track objects, and may need an issue to update TrackBase exposure/methods accordingly. Need at least to update init segment received, removesourcebuffer, etc conditions need to ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: consider referencing (in PR description maybe?) the demo: https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html -->
         </div>
       </div>
