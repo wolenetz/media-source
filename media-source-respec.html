@@ -417,73 +417,158 @@ interface MediaSource : EventTarget {
               </ol>
             </li>
 
-            <li>Let <var>SourceBuffer audioTracks list</var> equal the {{AudioTrackList}} object returned by <var>sourceBuffer</var>.{{SourceBuffer/audioTracks}}.</li>
-            <li>If the <var>SourceBuffer audioTracks list</var> is not empty, then run the following steps:
+            <li>Let |SourceBuffer audioTracks list| equal the {{AudioTrackList}} object returned by
+              <var>sourceBuffer</var>.{{SourceBuffer/audioTracks}}.</li>
+            <li>If the |SourceBuffer audioTracks list| is not empty, then run the following steps:
               <ol>
-                <li>Let <var>HTMLMediaElement audioTracks list</var> equal the {{AudioTrackList}} object returned by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.</li>
-                <li>For each {{AudioTrack}} object in the <var>SourceBuffer audioTracks list</var>, run the following steps:
+                <li>For each {{AudioTrack}} object in the |SourceBuffer audioTracks list|, run the following steps:
                   <ol>
                     <li>Set the {{AudioTrack/sourceBuffer}} attribute on the {{AudioTrack}} object to null.</li>
-                    <li>Remove the {{AudioTrack}} object from the <var>HTMLMediaElement audioTracks list</var>.
+
+                    <li>Remove the {{AudioTrack}} object from the |SourceBuffer audioTracks list|.
                     <p class="note">
-                      This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{AudioTrack}} object, at the <var>HTMLMediaElement audioTracks list</var>.
-                      If the {{AudioTrack/enabled}} attribute on the {{AudioTrack}} object was true at the beginning of this removal step, then this should also trigger {{AudioTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the <var>HTMLMediaElement audioTracks list</var>
+                      This should trigger {{AudioTrackList}} [[HTML]] logic to <a
+                        def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{AudioTrack}}
+                      object, at the |SourceBuffer audioTracks list|.  If the {{AudioTrack/enabled}} attribute on the
+                      {{AudioTrack}} object was true at the beginning of this removal step, then this should also
+                      trigger {{AudioTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a
+                        def-id="mediatracklist-change"></a> at the |SourceBuffer audioTracks list|.
                     </p>
                     </li>
-                    <li>Remove the {{AudioTrack}} object from the <var>SourceBuffer audioTracks list</var>.
-                    <p class="note">
-                      This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{AudioTrack}} object, at the <var>SourceBuffer audioTracks list</var>.
-                      If the {{AudioTrack/enabled}} attribute on the {{AudioTrack}} object was true at the beginning of this removal step, then this should also trigger {{AudioTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the <var>SourceBuffer audioTracks list</var>
-                    </p>
+
+                    <li>
+                      <dl class="switch">
+                        <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                        <dd>Post an internal <code>remove track mirror</code> message to [=port to main=] whose implicit
+                        handler in {{Window}} runs the steps in the following "otherwise" case for the {{Window}}
+                        {{AudioTrack}} mirror of the {{DedicatedWorkerGlobalScope}} {{AudioTrack}} object created
+                        previously by the implicit handler for the internal <code>create track mirror</code>
+                        message.</dd>
+                        <dt>Otherwise, run the following steps:</dt>
+                        <dd>
+                        <ol>
+                          <li>Let |HTMLMediaElement audioTracks list| equal the {{AudioTrackList}} object
+                            returned by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.</li>
+                          <li>Remove the {{AudioTrack}} object from the |HTMLMediaElement audioTracks list|.
+                            <p class="note">
+                              This should trigger {{AudioTrackList}} [[HTML]] logic to <a
+                                def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the
+                              {{AudioTrack}} object, at the |HTMLMediaElement audioTracks list|. If the
+                              {{AudioTrack/enabled}} attribute on the {{AudioTrack}} object was true at the beginning of
+                              this removal step, then this should also trigger {{AudioTrackList}} [[HTML]] logic to
+                              [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the
+                              |HTMLMediaElement audioTracks list|.
+                            </p>
+                          </li>
+                        </ol>
+                        </dd>
+                      </dl>
                     </li>
                   </ol>
                 </li>
               </ol>
             </li>
 
-            <li>Let <var>SourceBuffer videoTracks list</var> equal the {{VideoTrackList}} object returned by <var>sourceBuffer</var>.{{SourceBuffer/videoTracks}}.</li>
-            <li>If the <var>SourceBuffer videoTracks list</var> is not empty, then run the following steps:
+            <li>Let |SourceBuffer videoTracks list| equal the {{VideoTrackList}} object returned by
+              <var>sourceBuffer</var>.{{SourceBuffer/videoTracks}}.</li>
+            <li>If the |SourceBuffer videoTracks list| is not empty, then run the following steps:
               <ol>
-                <li>Let <var>HTMLMediaElement videoTracks list</var> equal the {{VideoTrackList}} object returned by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.</li>
-                <li>For each {{VideoTrack}} object in the <var>SourceBuffer videoTracks list</var>, run the following steps:
+                <li>For each {{VideoTrack}} object in the |SourceBuffer videoTracks list|, run the following steps:
                   <ol>
                     <li>Set the {{VideoTrack/sourceBuffer}} attribute on the {{VideoTrack}} object to null.</li>
-                    <li>Remove the {{VideoTrack}} object from the <var>HTMLMediaElement videoTracks list</var>.
+
+                    <li>Remove the {{VideoTrack}} object from the |SourceBuffer videoTracks list|.
                     <p class="note">
-                      This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{VideoTrack}} object, at the <var>HTMLMediaElement videoTracks list</var>.
-                      If the {{VideoTrack/selected}} attribute on the {{VideoTrack}} object was true at the beginning of this removal step, then this should also trigger {{VideoTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the <var>HTMLMediaElement videoTracks list</var>
+                      This should trigger {{VideoTrackList}} [[HTML]] logic to <a
+                        def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{VideoTrack}}
+                      object, at the |SourceBuffer videoTracks list|.  If the {{VideoTrack/selected}} attribute on the
+                      {{VideoTrack}} object was true at the beginning of this removal step, then this should also
+                      trigger {{VideoTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a
+                        def-id="mediatracklist-change"></a> at the |SourceBuffer videoTracks list|.
                     </p>
                     </li>
-                    <li>Remove the {{VideoTrack}} object from the <var>SourceBuffer videoTracks list</var>.
-                    <p class="note">
-                      This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the {{VideoTrack}} object, at the <var>SourceBuffer videoTracks list</var>.
-                      If the {{VideoTrack/selected}} attribute on the {{VideoTrack}} object was true at the beginning of this removal step, then this should also trigger {{VideoTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the <var>SourceBuffer videoTracks list</var>
-                    </p>
+
+                    <li>
+                      <dl class="switch">
+                        <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                        <dd>Post an internal <code>remove track mirror</code> message to [=port to main=] whose implicit
+                        handler in {{Window}} runs the steps in the following "otherwise" case for the {{Window}}
+                        {{VideoTrack}} mirror of the {{DedicatedWorkerGlobalScope}} {{VideoTrack}} object created
+                        previously by the implicit handler for the internal <code>create track mirror</code>
+                        message.</dd>
+                        <dt>Otherwise, run the following steps:</dt>
+                        <dd>
+                        <ol>
+                          <li>Let |HTMLMediaElement videoTracks list| equal the {{VideoTrackList}} object returned by
+                            the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.</li>
+                          <li>Remove the {{VideoTrack}} object from the |HTMLMediaElement videoTracks list|.
+                            <p class="note">
+                              This should trigger {{VideoTrackList}} [[HTML]] logic to <a
+                                def-id="queue-and-fire-media-removetrack-with-track-attr-initialized-to"></a> the
+                              {{VideoTrack}} object, at the |HTMLMediaElement videoTracks list|. If the
+                              {{VideoTrack/selected}} attribute on the {{VideoTrack}} object was true at the beginning
+                              of this removal step, then this should also trigger {{VideoTrackList}} [[HTML]] logic to
+                              [=queue a task=] to [=fire an event=] named <a def-id="mediatracklist-change"></a> at the
+                              |HTMLMediaElement videoTracks list|.
+                            </p>
+                          </li>
+                        </ol>
+                        </dd>
+                      </dl>
                     </li>
                   </ol>
                 </li>
               </ol>
             </li>
 
-
-            <li>Let <var>SourceBuffer textTracks list</var> equal the {{TextTrackList}} object returned by <var>sourceBuffer</var>.{{SourceBuffer/textTracks}}.</li>
-            <li>If the <var>SourceBuffer textTracks list</var> is not empty, then run the following steps:
+            <li>Let |SourceBuffer textTracks list| equal the {{TextTrackList}} object returned by
+              <var>sourceBuffer</var>.{{SourceBuffer/textTracks}}.</li>
+            <li>If the |SourceBuffer textTracks list| is not empty, then run the following steps:
               <ol>
-                <li>Let <var>HTMLMediaElement textTracks list</var> equal the {{TextTrackList}} object returned by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.</li>
-                <li>For each {{TextTrack}} object in the <var>SourceBuffer textTracks list</var>, run the following steps:
+                <li>For each {{TextTrack}} object in the |SourceBuffer textTracks list|, run the following steps:
                   <ol>
                     <li>Set the {{TextTrack/sourceBuffer}} attribute on the {{TextTrack}} object to null.</li>
-                    <li>Remove the {{TextTrack}} object from the <var>HTMLMediaElement textTracks list</var>.
+
+                    <li>Remove the {{TextTrack}} object from the |SourceBuffer textTracks list|.
                     <p class="note">
-                      This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-removetrack-with-track-attr-initialized-to"></a> the {{TextTrack}} object, at the <var>HTMLMediaElement textTracks list</var>.
-                      If the {{TextTrack/mode}} attribute on the {{TextTrack}} object was <a def-id="texttrackmode-showing"></a> or <a def-id="texttrackmode-hidden"></a> at the beginning of this removal step, then this should also trigger {{TextTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="texttracklist-change"></a> at the <var>HTMLMediaElement textTracks list</var>.
+                      This should trigger {{TextTrackList}} [[HTML]] logic to
+                      <a def-id="queue-and-fire-text-removetrack-with-track-attr-initialized-to"></a> the {{TextTrack}}
+                      object, at the |SourceBuffer textTracks list|. If the {{TextTrack/mode}} attribute on the
+                      {{TextTrack}} object was <a def-id="texttrackmode-showing"></a> or
+                      <a def-id="texttrackmode-hidden"></a> at the beginning of this removal step, then this should also
+                      trigger {{TextTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a
+                      def-id="texttracklist-change"></a> at the |SourceBuffer textTracks list|.
                     </p>
                     </li>
-                    <li>Remove the {{TextTrack}} object from the <var>SourceBuffer textTracks list</var>.
-                    <p class="note">
-                      This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-removetrack-with-track-attr-initialized-to"></a> the {{TextTrack}} object, at the <var>SourceBuffer textTracks list</var>.
-                      If the {{TextTrack/mode}} attribute on the {{TextTrack}} object was <a def-id="texttrackmode-showing"></a> or <a def-id="texttrackmode-hidden"></a> at the beginning of this removal step, then this should also trigger {{TextTrackList}} [[HTML]] logic to [=queue a task=] to [=fire an event=] named <a def-id="texttracklist-change"></a> at the <var>SourceBuffer textTracks list</var>.
-                    </p>
+
+                    <li>
+                      <dl class="switch">
+                        <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                        <dd>Post an internal <code>remove track mirror</code> message to [=port to main=] whose implicit
+                        handler in {{Window}} runs the steps in the following "otherwise" case for the {{Window}}
+                        {{TextTrack}} mirror of the {{DedicatedWorkerGlobalScope}} {{TextTrack}} object created
+                        previously by the implicit handler for the internal <code>create track mirror</code>
+                        message.</dd>
+                        <dt>Otherwise, run the following steps:</dt>
+                        <dd>
+                        <ol>
+                          <li>Let |HTMLMediaElement textTracks list| equal the {{TextTrackList}} object returned by the
+                            {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.</li>
+                          <li>Remove the {{TextTrack}} object from the |HTMLMediaElement textTracks list|.
+                            <p class="note">
+                              This should trigger {{TextTrackList}} [[HTML]] logic to
+                              <a def-id="queue-and-fire-text-removetrack-with-track-attr-initialized-to"></a>
+                              the {{TextTrack}} object, at the |HTMLMediaElement textTracks list|. If the
+                              {{TextTrack/mode}} attribute on the {{TextTrack}} object was
+                              <a def-id="texttrackmode-showing"></a> or <a def-id="texttrackmode-hidden"></a> at the
+                              beginning of this removal step, then this should also trigger {{TextTrackList}} [[HTML]]
+                              logic to [=queue a task=] to [=fire an event=] named <a def-id="texttracklist-change"></a>
+                              at the |HTMLMediaElement textTracks list|.
+                            </p>
+                          </li>
+                        </ol>
+                        </dd>
+                      </dl>
                     </li>
                   </ol>
                 </li>
@@ -780,7 +865,7 @@ interface MediaSource : EventTarget {
             500ms to append more data before playback stalls.</p>
 
           <dl class="switch">
-            <dt>If the the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals <a def-id="have-nothing"></a>:</dt>
+            <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals <a def-id="have-nothing"></a>:</dt>
             <dd>
               <ol>
                 <li>Abort these steps.</li>
@@ -828,7 +913,16 @@ interface MediaSource : EventTarget {
 
         <section id="active-source-buffer-changes">
           <h4><dfn>Changes to selected/enabled track state</dfn></h4>
-          <p>During playback {{MediaSource/activeSourceBuffers}} needs to be updated if the <a def-id="videoref" name="dom-videotrack-selected">selected video track</a>, the <a def-id="videoref" name="dom-audiotrack-enabled">enabled audio track(s)</a>, or a text track <a def-id="videoref" name="dom-texttrack-mode">mode</a> changes. When one or more of these changes occur the following steps need to be followed.</p>
+          <p>During playback {{MediaSource/activeSourceBuffers}} needs to be updated if the <a def-id="videoref" name="dom-videotrack-selected">selected video track</a>, the <a def-id="videoref" name="dom-audiotrack-enabled">enabled audio track(s)</a>, or a text track <a def-id="videoref" name="dom-texttrack-mode">mode</a> changes. When one or more of these changes occur the following steps need to be followed.
+             Also, when {{MediaSource}} was constructed in {{DedicatedWorkerGlobalScope}}, then each change that occurs
+             to a {{Window}} mirror of a track created previously by the implicit handler for the internal <code>create
+               track mirror</code> message MUST also be made to the corresponding {{DedicatedWorkerGlobalScope}} track
+             using an internal <code>update track state</code> message posted to [=port to worker=] whose implicit
+             handler makes the change and runs the following steps.
+             Likewise, each change that occurs to a {{DedicatedWorkerGlobalScope}} track MUST also be made to the
+             corresponding {{Window}} mirror of the track using an internal <code>update track state</code> message
+             posted to [=port to main=] whose implicit handler makes the change to the mirror.
+          </p>
           <dl class="switch">
             <dt>If the selected video track changes, then run the following steps:</dt>
             <dd>
@@ -1606,7 +1700,7 @@ interface SourceBuffer : EventTarget {
                           property on <var>new audio track</var>.</li>
                         <li>
                           <p>
-                            If {{HTMLMediaElement/audioTracks}}.<a def-id="audiotracklist-length"></a> equals 0, then run
+                            If this {{SourceBuffer}} object's {{SourceBuffer/audioTracks}}.{{AudioTrackList/length}}</a> equals 0, then run
                             the following steps:
                           </p>
                           <ol>
@@ -1619,10 +1713,24 @@ interface SourceBuffer : EventTarget {
                           This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{SourceBuffer/audioTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
-                        <li>Add <var>new audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
-                        <p class="note">
+                        <li>
+                          <dl class="switch">
+                            <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                            <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
+                            implicit handler in {{Window}} runs the following steps:<ol>
+                              <li>Let <var>mirrored audio track</var> be a new {{AudioTrack}} object.</li>
+                              <li>Assign the same property values to <var>mirrored audio track</var> as were determined for
+                                <var>new audio track</var>.</li>
+                              <li>Add <var>mirrored audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute
+                                on the HTMLMediaElement.</li>
+                            </ol></dd>
+                            <dt>Otherwise:</dt>
+                            <dd>Add <var>new audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute on the
+                            HTMLMediaElement.</dd>
+                            <p class="note">
                           This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
-                        </p>
+                            </p>
+                          </dl>
                         </li>
                       </ol>
                     </li>
@@ -1659,7 +1767,7 @@ interface SourceBuffer : EventTarget {
                           property on <var>new video track</var>.</li>
                         <li>
                           <p>
-                            If {{HTMLMediaElement/videoTracks}}.{{VideoTrackList/length}} equals 0, then run
+                            If this {{SourceBuffer}} object's {{SourceBuffer/videoTracks}}.{{VideoTrackList/length}} equals 0, then run
                             the following steps:
                           </p>
                           <ol>
@@ -1672,10 +1780,24 @@ interface SourceBuffer : EventTarget {
                           This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{SourceBuffer/videoTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
-                        <li>Add <var>new video track</var> to the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
-                        <p class="note">
+                        <li>
+                          <dl class="switch">
+                            <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                            <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
+                            implicit handler in {{Window}} runs the following steps:<ol>
+                              <li>Let <var>mirrored video track</var> be a new {{VideoTrack}} object.</li>
+                              <li>Assign the same property values to <var>mirrored video track</var> as were determined for
+                                <var>new video track</var>.</li>
+                              <li>Add <var>mirrored video track</var> to the {{HTMLMediaElement/videoTracks}} attribute
+                                on the HTMLMediaElement.</li>
+                            </ol></dd>
+                            <dt>Otherwise:</dt>
+                            <dd>Add <var>new video track</var> to the {{HTMLMediaElement/videoTracks}} attribute on the
+                            HTMLMediaElement.</dd>
+                            <p class="note">
                           This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
-                        </p>
+                            </p>
+                          </dl>
                         </li>
                       </ol>
                     </li>
@@ -1722,10 +1844,24 @@ interface SourceBuffer : EventTarget {
                           This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{SourceBuffer/textTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
-                        <li>Add <var>new text track</var> to the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
-                        <p class="note">
+                        <li>
+                          <dl class="switch">
+                            <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                            <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
+                            implicit handler in {{Window}} runs the following steps:<ol>
+                              <li>Let <var>mirrored text track</var> be a new {{TextTrack}} object.</li>
+                              <li>Assign the same property values to <var>mirrored text track</var> as were determined for
+                                <var>new text track</var>.</li>
+                              <li>Add <var>mirrored text track</var> to the {{HTMLMediaElement/textTracks}} attribute
+                                on the HTMLMediaElement.</li>
+                            </ol></dd>
+                            <dt>Otherwise:</dt>
+                            <dd>Add <var>new text track</var> to the {{HTMLMediaElement/textTracks}} attribute on the
+                            HTMLMediaElement.</dd>
+                            <p class="note">
                           This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
-                        </p>
+                            </p>
+                          </dl>
                         </li>
                       </ol>
                     </li>
@@ -1743,23 +1879,58 @@ interface SourceBuffer : EventTarget {
               </ol>
             </li>
             <li>Set [=pending initialization segment for changeType flag=] to false.</li>
-            <li>
-              <p>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is <a def-id="have-nothing"></a>, then run the following steps:</p>
+            <li>If the <var>active track flag</var> equals true, then run the following steps:
               <ol>
-                <li>
-                  If one or more objects in {{MediaSource/sourceBuffers}} have [=first initialization segment received flag=] set to false, then abort
-                  these steps.</li>
-                <li>Set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to <a def-id="have-metadata"></a>.
+                <dl class="switch">
+                  <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                  <dd>Post an internal <code>active track added</code> message to [=port to main=] whose implicit
+                  handler in {{Window}} runs the following step:
+                  <ol>
+                    <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                      {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
+                      {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
+                      {{HTMLMediaElement/HAVE_METADATA}}.
+                    </li>
+                  </ol></dd>
+                  <dt>Otherwise:</dt>
+                  <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                  {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
+                  {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
+                  {{HTMLMediaElement/HAVE_METADATA}}.</dd>
+                </dl>
                 <p class="note">
-                  Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} changes may trigger events on the HTMLMediaElement. This particular transition should trigger HTMLMediaElement logic to [=queue a task=] to [=fire an event=] named <a def-id="loadedmetadata"></a> at the media element.
+                  Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                  changes may trigger events on the HTMLMediaElement.
                 </p>
-                </li>
               </ol>
             </li>
-            <li>
-              If the <var>active track flag</var> equals true and the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
-              <a def-id="have-current-data"></a>, then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to <a def-id="have-metadata"></a>.
-            <p class="note">Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} changes may trigger events on the HTMLMediaElement.</p>
+            <li>If each object in {{MediaSource/sourceBuffers}} of the [=parent media source=] has [=first
+              initialization segment received flag=] equal to true, then run the following steps:
+              <ol>
+                <dl class="switch">
+                  <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                  <dd>Post an internal <code>sourcebuffers ready</code> message to [=port to main=] whose implicit
+                  handler in {{Window}} runs the following step:
+                  <ol>
+                    <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
+                      {{HTMLMediaElement/HAVE_NOTHING}}, then set the
+                      {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
+                      {{HTMLMediaElement/HAVE_METADATA}}.
+                    </li>
+                  </ol><dd>
+                  <dt>Otherwise:</dt>
+                  <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
+                  {{HTMLMediaElement/HAVE_NOTHING}}, then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                  attribute to {{HTMLMediaElement/HAVE_METADATA}}.</dd>
+                </dl>
+                <p class="note">
+                  Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                  changes may trigger events on the HTMLMediaElement. If transition from
+                  {{HTMLMediaElement/HAVE_NOTHING}} to {{HTMLMediaElement/HAVE_METADATA}} occurs, it should trigger
+                  HTMLMediaElement logic to [=queue a task=] to [=fire an event=] named
+                  [=HTMLMediaElement/loadedmetadata=] at the media element.
+                </p>
+              </ol>
             </li>
           </ol>
         </section>
@@ -2358,7 +2529,7 @@ interface SourceBufferList : EventTarget {
               <dt>Otherwise:</dt>
               <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}} resulting from the steps for the
               {{Window}} case, but run with the {{MediaSource}} and its {{SourceBuffer}} objects in their
-              {{DedicatedWorkerGlobalScope}} {{Window}} and communicated by using [=port to main=] implicit messages on
+              {{DedicatedWorkerGlobalScope}} and communicated by using [=port to main=] implicit messages on
               every update to the {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}}, or any of the
               buffering state that would change any of the values of each of those {{SourceBuffer/buffered}} attributes
               of the {{MediaSource/activeSourceBuffers}}.
@@ -2388,21 +2559,20 @@ partial interface AudioTrack {
         <div class="issue" data-number="280">[[HTML]] {{AudioTrack}} needs Window+DedicatedWorker
           exposure.</div>
         <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="AudioTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
-        <p>Returns the {{SourceBuffer}} that created this track.
-           Returns null if this track was not created by a {{SourceBuffer}} or
-           the {{SourceBuffer}} has been removed from the
-           {{MediaSource/sourceBuffers}} attribute of its [=parent media
-           source=].
-          <div class="note">
-            If the {{AudioTrack}} was created by an {{HTMLMediaElement}} (in
-            {{Window}} scope) on behalf of a {{SourceBuffer}} and its [=parent
-            media source=] that were created in a
-            {{DedicatedWorkerGlobalScope}}, the attribute returns null. The
-            {{DedicatedWorkerGlobalScope}} instance of such an {{AudioTrack}}
-            will return the {{SourceBuffer}} that created it, or null if the
-            {{SourceBuffer}} has been removed from the
-            {{MediaSource/sourceBuffers}} attribute of its [=parent media
-            source=].
+        <p>On getting, run the following step:
+            <dl class="switch">
+              <dt>If this track was created by a {{SourceBuffer}} that was created on the same [=global object/realm=]
+              as this track, and if that {{SourceBuffer}} has not been removed from the {{MediaSource/sourceBuffers}}
+              attribute of its [=parent media source=]:</dt>
+              <dd>Return the {{SourceBuffer}} that created this track.</dd>
+              <dt>Otherwise:</dt>
+              <dd>Return null.</dd>
+            </dl>
+            <div class="note">
+              For example, if a {{DedicatedWorkerGlobalScope}} {{SourceBuffer}} notified its internal <code>create track
+              mirror</code> handler in {{Window}} to create this track, then the {{Window}} copy of the track would
+              return null for this attribute.
+            </div>
           </div>
         </p>
         </dd></dl></section></div>
@@ -2419,21 +2589,20 @@ partial interface VideoTrack {
         <div class="issue" data-number="280">[[HTML]] {{VideoTrack}} needs Window+DedicatedWorker
           exposure.</div>
         <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="VideoTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
-        <p>Returns the {{SourceBuffer}} that created this track.
-           Returns null if this track was not created by a {{SourceBuffer}} or
-           the {{SourceBuffer}} has been removed from the
-           {{MediaSource/sourceBuffers}} attribute of its [=parent media
-           source=].
-          <div class="note">
-            If the {{VideoTrack}} was created by an {{HTMLMediaElement}} (in
-            {{Window}} scope) on behalf of a {{SourceBuffer}} and its [=parent
-            media source=] that were created in a
-            {{DedicatedWorkerGlobalScope}}, the attribute returns null. The
-            {{DedicatedWorkerGlobalScope}} instance of such a {{VideoTrack}}
-            will return the {{SourceBuffer}} that created it, or null if the
-            {{SourceBuffer}} has been removed from the
-            {{MediaSource/sourceBuffers}} attribute of its [=parent media
-            source=].
+        <p>On getting, run the following step:
+            <dl class="switch">
+              <dt>If this track was created by a {{SourceBuffer}} that was created on the same [=global object/realm=]
+              as this track, and if that {{SourceBuffer}} has not been removed from the {{MediaSource/sourceBuffers}}
+              attribute of its [=parent media source=]:</dt>
+              <dd>Return the {{SourceBuffer}} that created this track.</dd>
+              <dt>Otherwise:</dt>
+              <dd>Return null.</dd>
+            </dl>
+            <div class="note">
+              For example, if a {{DedicatedWorkerGlobalScope}} {{SourceBuffer}} notified its internal <code>create track
+              mirror</code> handler in {{Window}} to create this track, then the {{Window}} copy of the track would
+              return null for this attribute.
+            </div>
           </div>
         </p>
         </dd></dl></section></div>
@@ -2450,21 +2619,20 @@ partial interface TextTrack {
         <div class="issue" data-number="280">[[HTML]] {{TextTrack}} needs Window+DedicatedWorker
           exposure.</div>
         <section><h2>Attributes</h2><dl class="attributes" data-dfn-for="TextTrack"><dt><dfn><code>sourceBuffer</code></dfn> of type <span class="idlAttrType"><a>SourceBuffer</a></span>, readonly       , nullable</dt><dd>
-        <p>Returns the {{SourceBuffer}} that created this track.
-           Returns null if this track was not created by a {{SourceBuffer}} or
-           the {{SourceBuffer}} has been removed from the
-           {{MediaSource/sourceBuffers}} attribute of its [=parent media
-           source=].
-          <div class="note">
-            If the {{TextTrack}} was created by an {{HTMLMediaElement}} (in
-            {{Window}} scope) on behalf of a {{SourceBuffer}} and its [=parent
-            media source=] that were created in a
-            {{DedicatedWorkerGlobalScope}}, the attribute returns null. The
-            {{DedicatedWorkerGlobalScope}} instance of such a {{TextTrack}}
-            will return the {{SourceBuffer}} that created it, or null if the
-            {{SourceBuffer}} has been removed from the
-            {{MediaSource/sourceBuffers}} attribute of its [=parent media
-            source=].
+        <p>On getting, run the following step:
+            <dl class="switch">
+              <dt>If this track was created by a {{SourceBuffer}} that was created on the same [=global object/realm=]
+              as this track, and if that {{SourceBuffer}} has not been removed from the {{MediaSource/sourceBuffers}}
+              attribute of its [=parent media source=]:</dt>
+              <dd>Return the {{SourceBuffer}} that created this track.</dd>
+              <dt>Otherwise:</dt>
+              <dd>Return null.</dd>
+            </dl>
+            <div class="note">
+              For example, if a {{DedicatedWorkerGlobalScope}} {{SourceBuffer}} notified its internal <code>create track
+              mirror</code> handler in {{Window}} to create this track, then the {{Window}} copy of the track would
+              return null for this attribute.
+            </div>
           </div>
         </p>
         </dd></dl></section></div>
@@ -2648,8 +2816,6 @@ partial interface TextTrack {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
-          <!-- BIG TODO: AVT-track&tracklist: update init segment received, removesourcebuffer conditions need to
-            ensure cross-context (main) track and tracklist objects proxied by worker context MSE API are also updated -->
           <!-- BIG TODO: note element error notification cross-context from media element to MSE-in-worker may be delayed; should be at worst like onmessage handling in worker of an error state message transmitted to the worker by a hypothetical element onerror handler -->
           <!-- BIG TODO: consider referencing (in PR description maybe?) the demo: https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html -->
         </div>
