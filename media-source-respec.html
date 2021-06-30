@@ -1772,10 +1772,10 @@ interface SourceBuffer : EventTarget {
                             <dt>Otherwise:</dt>
                             <dd>Add <var>new audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute on the
                             HTMLMediaElement.</dd>
-                            <p class="note">
-                          This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
-                            </p>
                           </dl>
+                          <p class="note">
+                            This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
+                          </p>
                         </li>
                       </ol>
                     </li>
@@ -1839,10 +1839,10 @@ interface SourceBuffer : EventTarget {
                             <dt>Otherwise:</dt>
                             <dd>Add <var>new video track</var> to the {{HTMLMediaElement/videoTracks}} attribute on the
                             HTMLMediaElement.</dd>
-                            <p class="note">
-                          This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
-                            </p>
                           </dl>
+                          <p class="note">
+                            This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
+                          </p>
                         </li>
                       </ol>
                     </li>
@@ -1903,10 +1903,10 @@ interface SourceBuffer : EventTarget {
                             <dt>Otherwise:</dt>
                             <dd>Add <var>new text track</var> to the {{HTMLMediaElement/textTracks}} attribute on the
                             HTMLMediaElement.</dd>
-                            <p class="note">
-                          This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
-                            </p>
                           </dl>
+                          <p class="note">
+                            This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
+                          </p>
                         </li>
                       </ol>
                     </li>
@@ -1925,57 +1925,51 @@ interface SourceBuffer : EventTarget {
             </li>
             <li>Set [=pending initialization segment for changeType flag=] to false.</li>
             <li>If the <var>active track flag</var> equals true, then run the following steps:
-              <ol>
-                <dl class="switch">
-                  <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
-                  <dd>Post an internal <code>active track added</code> message to [=port to main=] whose implicit
-                  handler in {{Window}} runs the following step:
-                  <ol>
-                    <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
-                      {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
-                      {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
-                      {{HTMLMediaElement/HAVE_METADATA}}.
-                    </li>
-                  </ol></dd>
-                  <dt>Otherwise:</dt>
-                  <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
-                  {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
-                  {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
-                  {{HTMLMediaElement/HAVE_METADATA}}.</dd>
-                </dl>
-                <p class="note">
-                  Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
-                  changes may trigger events on the HTMLMediaElement.
-                </p>
-              </ol>
+              <dl class="switch">
+                <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                <dd>Post an internal <code>active track added</code> message to [=port to main=] whose implicit handler
+                in {{Window}} runs the following step:
+                <ol>
+                  <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                    {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
+                    {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
+                    {{HTMLMediaElement/HAVE_METADATA}}.
+                  </li>
+                </ol></dd>
+                <dt>Otherwise:</dt>
+                <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                {{HTMLMediaElement/HAVE_CURRENT_DATA}}, then set the
+                {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
+                {{HTMLMediaElement/HAVE_METADATA}}.</dd>
+              </dl>
+              <p class="note">
+                Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                changes may trigger events on the HTMLMediaElement.
+              </p>
             </li>
             <li>If each object in {{MediaSource/sourceBuffers}} of the [=parent media source=] has [=first
               initialization segment received flag=] equal to true, then run the following steps:
-              <ol>
-                <dl class="switch">
-                  <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
-                  <dd>Post an internal <code>sourcebuffers ready</code> message to [=port to main=] whose implicit
-                  handler in {{Window}} runs the following step:
-                  <ol>
-                    <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
-                      {{HTMLMediaElement/HAVE_NOTHING}}, then set the
-                      {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to
-                      {{HTMLMediaElement/HAVE_METADATA}}.
-                    </li>
-                  </ol><dd>
-                  <dt>Otherwise:</dt>
-                  <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
-                  {{HTMLMediaElement/HAVE_NOTHING}}, then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
-                  attribute to {{HTMLMediaElement/HAVE_METADATA}}.</dd>
-                </dl>
-                <p class="note">
-                  Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
-                  changes may trigger events on the HTMLMediaElement. If transition from
-                  {{HTMLMediaElement/HAVE_NOTHING}} to {{HTMLMediaElement/HAVE_METADATA}} occurs, it should trigger
-                  HTMLMediaElement logic to [=queue a task=] to [=fire an event=] named
-                  [=HTMLMediaElement/loadedmetadata=] at the media element.
-                </p>
-              </ol>
+              <dl class="switch">
+                <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                <dd>Post an internal <code>sourcebuffers ready</code> message to [=port to main=] whose implicit handler
+                in {{Window}} runs the following step:
+                <ol>
+                  <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
+                    {{HTMLMediaElement/HAVE_NOTHING}}, then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                    attribute to {{HTMLMediaElement/HAVE_METADATA}}.
+                  </li>
+                </ol><dd>
+                <dt>Otherwise:</dt>
+                <dd>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is
+                {{HTMLMediaElement/HAVE_NOTHING}}, then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                attribute to {{HTMLMediaElement/HAVE_METADATA}}.</dd>
+              </dl>
+              <p class="note">
+                Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}}
+                changes may trigger events on the HTMLMediaElement. If transition from {{HTMLMediaElement/HAVE_NOTHING}}
+                to {{HTMLMediaElement/HAVE_METADATA}} occurs, it should trigger HTMLMediaElement logic to [=queue a
+                task=] to [=fire an event=] named [=HTMLMediaElement/loadedmetadata=] at the media element.
+              </p>
             </li>
           </ol>
         </section>
@@ -2552,6 +2546,7 @@ interface SourceBufferList : EventTarget {
           <li>Let <var>recent intersection ranges</var> be determined as follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
+              <dd>
               <ol>
                 <li>Let <var>recent intersection ranges</var> equal an empty {{TimeRanges}} object.</li>
                 <li>If {{MediaSource/activeSourceBuffers}}.length does not equal 0 then run the following steps:
@@ -2571,6 +2566,7 @@ interface SourceBufferList : EventTarget {
                   </ol>
                 </li>
               </ol>
+              </dd>
               <dt>Otherwise:</dt>
               <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}} resulting from the steps for the
               {{Window}} case, but run with the {{MediaSource}} and its {{SourceBuffer}} objects in their
