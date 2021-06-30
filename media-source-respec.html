@@ -1036,32 +1036,56 @@ interface MediaSource : EventTarget {
                       the largest [=track buffer ranges=] end time across all the [=track buffers=] across all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}.
                       <p class="note">This allows the duration to properly reflect the end of the appended media segments. For example, if the duration was explicitly set to 10 seconds and only media segments for 0 to 5 seconds were appended before endOfStream() was called, then the duration will get updated to 5 seconds.</p>
                     </li>
-                    <li>Notify the media element that it now has all of the media data.</li>
+                    <li>
+                      <dl class="switch">
+                        <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                        <dd>Post an internal <code>end of stream</code> message to [=port to main=] whose implicit
+                        handler in {{Window}} notifies the media element that it now has all of the media data.</dd>
+                        <dt>Otherwise:</dt>
+                        <dd>Notify the media element that it now has all of the media data.</dd>
+                      </dl>
+                    </li>
                   </ol>
                 </dd>
-                <dt>If <var>error</var> is set to {{EndOfStreamError/""network""}}
-                </dt>
+
+                <dt>If <var>error</var> is set to {{EndOfStreamError/""network""}}</dt>
                 <dd>
+                <dl class="switch">
+                  <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                  <dd>Post an internal <code>network error</code> message to [=port to main=] whose implicit handler in
+                  {{Window}} runs the steps in the following "otherwise" case.</dd>
+                  <dt>Otherwise:</dt>
+                  <dd>
                   <dl class="switch">
-                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals <a def-id="have-nothing"></a>
-                    </dt>
+                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals
+                    {{HTMLMediaElement/HAVE_NOTHING}}</dt>
                     <dd>Run the <a def-id="media-data-cannot-be-fetched"></a> steps of the <a def-id="resource-fetch-algorithm"></a>'s <a def-id="media-data-processing-steps-list"></a>.</dd>
-                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than <a def-id="have-nothing"></a>
-                    </dt>
+                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                    {{HTMLMediaElement/HAVE_NOTHING}}</dt>
                     <dd>Run the "<i>If the connection is interrupted after some media data has been received, causing the user agent to give up trying to fetch the resource</i>" steps of the <a def-id="resource-fetch-algorithm"></a>'s <a def-id="media-data-processing-steps-list"></a>.</dd>
                   </dl>
+                  </dd>
+                </dl>
                 </dd>
-                <dt>If <var>error</var> is set to {{EndOfStreamError/""decode""}}
-                </dt>
+
+                <dt>If <var>error</var> is set to {{EndOfStreamError/""decode""}}</dt>
                 <dd>
+                <dl class="switch">
+                  <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
+                  <dd>Post an internal <code>decode error</code> message to [=port to main=] whose implicit handler in
+                  {{Window}} runs the steps in the following "otherwise" case.</dd>
+                  <dt>Otherwise:</dt>
+                  <dd>
                   <dl class="switch">
-                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals <a def-id="have-nothing"></a>
-                    </dt>
+                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute equals
+                    {{HTMLMediaElement/HAVE_NOTHING}}</dt>
                     <dd>Run the "<i>If the media data can be fetched but is found by inspection to be in an unsupported format, or can otherwise not be rendered at all</i>" steps of the <a def-id="resource-fetch-algorithm"></a>'s <a def-id="media-data-processing-steps-list"></a>.</dd>
-                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than <a def-id="have-nothing"></a>
-                    </dt>
+                    <dt>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is greater than
+                    {{HTMLMediaElement/HAVE_NOTHING}}
                     <dd>Run the <a def-id="media-data-is-corrupted"></a> steps of the <a def-id="resource-fetch-algorithm"></a>'s <a def-id="media-data-processing-steps-list"></a>.</dd>
                   </dl>
+                  </dd>
+                </dl>
                 </dd>
               </dl>
             </li>
@@ -2825,7 +2849,6 @@ partial interface TextTrack {
   video.src = window.URL.createObjectURL(mediaSource);
 &lt;/script&gt;
           </pre>
-          <!-- BIG TODO: end-of-stream cross-context specification -->
           <!-- BIG TODO: prepare-append error cross-context specification -->
           <!-- BIG TODO: consider adding to coded-frame-processing and coded-frame-removal non-normative notes about possible latency of information in the track buffers reaching the media element. This pre-exists MSE-in-Worker, so not really a priority here, but a good time is now to clarify that... -->
           <!-- BIG TODO: consider referencing (in PR description maybe?) the demo: https://wolenetz.github.io/mse-in-workers-demo/mse-in-workers-demo.html -->
