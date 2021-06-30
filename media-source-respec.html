@@ -319,6 +319,7 @@ interface MediaSource : EventTarget {
                     attribute EventHandler        onsourceopen;
                     attribute EventHandler        onsourceended;
                     attribute EventHandler        onsourceclose;
+    static readonly attribute boolean canConstructInDedicatedWorker;
     SourceBuffer   addSourceBuffer (DOMString type);
     undefined           removeSourceBuffer (SourceBuffer sourceBuffer);
     undefined           endOfStream (optional EndOfStreamError error);
@@ -368,6 +369,10 @@ interface MediaSource : EventTarget {
           <p>The event handler for the {{sourceended}} event.</p>
         </dd><dt><dfn><code>onsourceclose</code></dfn> of type {{EventHandler}}</dt><dd>
           <p>The event handler for the {{sourceclose}} event.</p>
+        </dd>
+        <dt><dfn><code>canConstructInDedicatedWorker</code></dfn> of type {{boolean}}</dt><dd>
+          <p>Returns true.</p>
+          <p class="note">This attribute enables feature detection of support for MSE-in-Workers without requiring an application to attempt usage first from a DedicatedWorker.</p>
         </dd></dl></section><section><h2>Methods</h2><dl class="methods" data-dfn-for="MediaSource"><dt><dfn><code>addSourceBuffer</code></dfn></dt><dd>
           <p>Adds a new <a>SourceBuffer</a> to {{MediaSource/sourceBuffers}}.</p>
           <ol class="method-algorithm">
