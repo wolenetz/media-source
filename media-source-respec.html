@@ -358,8 +358,8 @@ interface MediaSource : EventTarget {
             <li>If the value being set is negative or NaN then throw a {{TypeError}} exception and abort these steps.</li>
             <li>If the {{MediaSource/readyState}} attribute is not {{ReadyState/""open""}} then throw an {{InvalidStateError}} exception and abort these steps.</li>
             <li>If the {{SourceBuffer/updating}} attribute equals true on any <a>SourceBuffer</a> in {{MediaSource/sourceBuffers}}, then throw an {{InvalidStateError}} exception and abort these steps.</li>
-            <li>Run the [=duration change=] algorithm with <var>new duration</var> set to the value being assigned to this attribute.
-              <p class="note">The [=duration change=] algorithm will adjust <var>new duration</var> higher if there is any currently buffered coded frame with a higher end time.</p>
+            <li>Run the [=duration change=] algorithm with |new duration| set to the value being assigned to this attribute.
+              <p class="note">The [=duration change=] algorithm will adjust |new duration| higher if there is any currently buffered coded frame with a higher end time.</p>
               <p class="note">{{SourceBuffer/appendBuffer()}} and {{MediaSource/endOfStream()}} can update the duration under certain circumstances.</p>
             </li>
           </ol>
@@ -408,22 +408,24 @@ interface MediaSource : EventTarget {
             <li>Add the new object to {{MediaSource/sourceBuffers}} and [=queue a task=] to [=fire an event=] named {{addsourcebuffer}} at {{MediaSource/sourceBuffers}}.</li>
             <li>Return the new object.</li>
           </ol>
-        <table class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">type</td><td class="prmType">{{DOMString}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptFalse"><span role="img" aria-label="False">✘</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em><a>SourceBuffer</a></div></dd><dt><dfn><code>removeSourceBuffer</code></dfn></dt><dd>
-          <p>Removes a <a>SourceBuffer</a> from {{MediaSource/sourceBuffers}}.</p>
+        <table class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">type</td><td class="prmType">{{DOMString}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptFalse"><span role="img" aria-label="False">✘</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em><a>SourceBuffer</a></div></dd>
+
+          <dt><dfn><code>removeSourceBuffer</code></dfn></dt><dd>
+          <p>Removes a {{SourceBuffer}} from {{MediaSource/sourceBuffers}}.</p>
 
           <ol class="method-algorithm">
-            <li>If <var>sourceBuffer</var> specifies an object that is not in {{MediaSource/sourceBuffers}} then throw a {{NotFoundError}} exception and abort these steps.</li>
-            <li>If the <var>sourceBuffer</var>.{{SourceBuffer/updating}} attribute equals true, then run the following steps:
+            <li>If |sourceBuffer:SourceBuffer| specifies an object that is not in {{MediaSource/sourceBuffers}} then throw a {{NotFoundError}} exception and abort these steps.</li>
+            <li>If the |sourceBuffer|.{{SourceBuffer/updating}} attribute equals true, then run the following steps:
               <ol>
                 <li>Abort the [=buffer append=] algorithm if it is running.</li>
-                <li>Set the <var>sourceBuffer</var>.{{SourceBuffer/updating}} attribute to false.</li>
-                <li>[=Queue a task=] to [=fire an event=] named {{abort}} at <var>sourceBuffer</var>.</li>
-                <li>[=Queue a task=] to [=fire an event=] named {{updateend}} at <var>sourceBuffer</var>.</li>
+                <li>Set the |sourceBuffer|.{{SourceBuffer/updating}} attribute to false.</li>
+                <li>[=Queue a task=] to [=fire an event=] named {{abort}} at |sourceBuffer|.</li>
+                <li>[=Queue a task=] to [=fire an event=] named {{updateend}} at |sourceBuffer|.</li>
               </ol>
             </li>
 
-            <li>Let |SourceBuffer audioTracks list| equal the {{AudioTrackList}} object returned by
-              <var>sourceBuffer</var>.{{SourceBuffer/audioTracks}}.</li>
+            <li>Let |SourceBuffer audioTracks list:AudioTrackList| equal the {{AudioTrackList}} object returned by
+              |sourceBuffer|.{{SourceBuffer/audioTracks}}.</li>
             <li>If the |SourceBuffer audioTracks list| is not empty, then run the following steps:
               <ol>
                 <li>For each {{AudioTrack}} object in the |SourceBuffer audioTracks list|, run the following steps:
@@ -452,7 +454,7 @@ interface MediaSource : EventTarget {
                         <dt>Otherwise, run the following steps:</dt>
                         <dd>
                         <ol>
-                          <li>Let |HTMLMediaElement audioTracks list| equal the {{AudioTrackList}} object
+                          <li>Let |HTMLMediaElement audioTracks list:AudioTrackList| equal the {{AudioTrackList}} object
                             returned by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.</li>
                           <li>Remove the {{AudioTrack}} object from the |HTMLMediaElement audioTracks list|.
                             <p class="note">
@@ -474,8 +476,8 @@ interface MediaSource : EventTarget {
               </ol>
             </li>
 
-            <li>Let |SourceBuffer videoTracks list| equal the {{VideoTrackList}} object returned by
-              <var>sourceBuffer</var>.{{SourceBuffer/videoTracks}}.</li>
+            <li>Let |SourceBuffer videoTracks list:VideoTrackList| equal the {{VideoTrackList}} object returned by
+              |sourceBuffer|.{{SourceBuffer/videoTracks}}.</li>
             <li>If the |SourceBuffer videoTracks list| is not empty, then run the following steps:
               <ol>
                 <li>For each {{VideoTrack}} object in the |SourceBuffer videoTracks list|, run the following steps:
@@ -504,8 +506,8 @@ interface MediaSource : EventTarget {
                         <dt>Otherwise, run the following steps:</dt>
                         <dd>
                         <ol>
-                          <li>Let |HTMLMediaElement videoTracks list| equal the {{VideoTrackList}} object returned by
-                            the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.</li>
+                          <li>Let |HTMLMediaElement videoTracks list:VideoTrackList| equal the {{VideoTrackList}} object
+                            returned by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.</li>
                           <li>Remove the {{VideoTrack}} object from the |HTMLMediaElement videoTracks list|.
                             <p class="note">
                               This should trigger {{VideoTrackList}} [[HTML]] logic to <a
@@ -526,8 +528,8 @@ interface MediaSource : EventTarget {
               </ol>
             </li>
 
-            <li>Let |SourceBuffer textTracks list| equal the {{TextTrackList}} object returned by
-              <var>sourceBuffer</var>.{{SourceBuffer/textTracks}}.</li>
+            <li>Let |SourceBuffer textTracks list:TextTrackList| equal the {{TextTrackList}} object returned by
+              |sourceBuffer|.{{SourceBuffer/textTracks}}.</li>
             <li>If the |SourceBuffer textTracks list| is not empty, then run the following steps:
               <ol>
                 <li>For each {{TextTrack}} object in the |SourceBuffer textTracks list|, run the following steps:
@@ -557,8 +559,8 @@ interface MediaSource : EventTarget {
                         <dt>Otherwise, run the following steps:</dt>
                         <dd>
                         <ol>
-                          <li>Let |HTMLMediaElement textTracks list| equal the {{TextTrackList}} object returned by the
-                            {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.</li>
+                          <li>Let |HTMLMediaElement textTracks list:TextTrackList| equal the {{TextTrackList}} object
+                            returned by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.</li>
                           <li>Remove the {{TextTrack}} object from the |HTMLMediaElement textTracks list|.
                             <p class="note">
                               This should trigger {{TextTrackList}} [[HTML]] logic to
@@ -580,21 +582,28 @@ interface MediaSource : EventTarget {
               </ol>
             </li>
 
-            <li>If <var>sourceBuffer</var> is in {{MediaSource/activeSourceBuffers}}, then remove <var>sourceBuffer</var> from {{MediaSource/activeSourceBuffers}} and
-              [=queue a task=] to [=fire an event=] named {{removesourcebuffer}} at the <a>SourceBufferList</a> returned by {{MediaSource/activeSourceBuffers}}.</li>
-            <li>Remove <var>sourceBuffer</var> from {{MediaSource/sourceBuffers}} and [=queue a task=] to [=fire an event=] named {{removesourcebuffer}} at
-              the <a>SourceBufferList</a> returned by {{MediaSource/sourceBuffers}}.</li>
-            <li>Destroy all resources for <var>sourceBuffer</var>.</li>
+            <li>If |sourceBuffer| is in {{MediaSource/activeSourceBuffers}}, then remove |sourceBuffer| from
+              {{MediaSource/activeSourceBuffers}} and [=queue a task=] to [=fire an event=] named {{removesourcebuffer}}
+              at the <a>SourceBufferList</a> returned by {{MediaSource/activeSourceBuffers}}.</li>
+            <li>Remove |sourceBuffer| from {{MediaSource/sourceBuffers}} and [=queue a task=] to [=fire an event=] named
+              {{removesourcebuffer}} at the <a>SourceBufferList</a> returned by {{MediaSource/sourceBuffers}}.</li>
+            <li>Destroy all resources for |sourceBuffer|.</li>
           </ol>
-        <table class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">sourceBuffer</td><td class="prmType">{{SourceBuffer}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptFalse"><span role="img" aria-label="False">✘</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em>{{undefined}}</div></dd><dt><dfn><code>endOfStream</code></dfn></dt><dd>
+        <table
+          class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">|sourceBuffer|</td><td class="prmType">{{SourceBuffer}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptFalse"><span role="img" aria-label="False">✘</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em>{{undefined}}</div></dd>
+
+          <dt><dfn><code>endOfStream</code></dfn></dt><dd>
           <p>Signals the end of the stream.</p>
 
           <ol class="method-algorithm">
             <li>If the {{MediaSource/readyState}} attribute is not in the {{ReadyState/""open""}} state then throw an {{InvalidStateError}} exception and abort these steps.</li>
             <li>If the {{SourceBuffer/updating}} attribute equals true on any <a>SourceBuffer</a> in {{MediaSource/sourceBuffers}}, then throw an {{InvalidStateError}} exception and abort these steps.</li>
-            <li>Run the [=end of stream=] algorithm with the <var>error</var> parameter set to <var>error</var>.</li>
+            <li>Run the [=end of stream=] algorithm with the |error:EndOfStreamError| parameter set to |error|.</li>
           </ol>
-        <table class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">error</td><td class="prmType">{{EndOfStreamError}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptTrue"><span role="img" aria-label="True">✔</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em>{{undefined}}</div></dd><dt><dfn><code>setLiveSeekableRange</code></dfn></dt><dd>
+        <table
+          class="parameters"><tbody><tr><th>Parameter</th><th>Type</th><th>Nullable</th><th>Optional</th><th>Description</th></tr><tr><td class="prmName">|error|</td><td class="prmType">{{EndOfStreamError}}</td><td class="prmNullFalse"><span role="img" aria-label="False">✘</span></td><td class="prmOptTrue"><span role="img" aria-label="True">✔</span></td><td class="prmDesc"></td></tr></tbody></table><div><em>Return type: </em>{{undefined}}</div></dd>
+
+          <dt><dfn><code>setLiveSeekableRange</code></dfn></dt><dd>
 
           <p>Updates the [=live seekable range=] variable used in <a href="#htmlmediaelement-extensions">HTMLMediaElement Extensions</a> to modify {{HTMLMediaElement}}.{{HTMLMediaElement/seekable}} behavior.</p>
           <ol class="method-algorithm">
@@ -747,17 +756,17 @@ interface MediaSource : EventTarget {
                     <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}, then setup worker
                     attachment communication and open the {{MediaSource}}:</dt>
                     <dd><ol>
-                      <li>Create an internal, unexposed {{MessageChannel}} <var>channel</var>.</li>
-                      <li>Set [=port to worker=] to the {{MessageChannel/port1}} value of <var>channel</var>.</li>
+                      <li>Create an internal, unexposed {{MessageChannel}} |channel:MessageChannel|.</li>
+                      <li>Set [=port to worker=] to the {{MessageChannel/port1}} value of |channel|.</li>
                       <li>Execute [=StructuredSerializeWithTransfer=] with the {{MessageChannel/port2}} of
-                        <var>channel</var> as both the value and the sole member of the <var>transferList</var>, and let
-                        the result be <var>serialized port2</var>.
+                        |channel| as both the value and the sole member of the |transferList|, and let
+                        the result be |serialized port2:MessagePort|.
                       <li>[=Queue a task=] on the {{MediaSource}}'s {{DedicatedWorkerGlobalScope}} that will
                         <ol>
-                          <li>Execute [=StructuredDeserializeWithTransfer=] with <var>serialized port2</var> and
+                          <li>Execute [=StructuredDeserializeWithTransfer=] with |serialized port2| and
                             {{DedicatedWorkerGlobalScope}}'s [=environment settings object/realm=], and set [=port to
                             main=] to be the resulting deserialized clone of the transferred {{MessageChannel/port2}}
-                            value of <var>channel</var>.</li>
+                            value of |channel|.</li>
                           <li>Set the {{MediaSource/readyState}} attribute to {{ReadyState/""open""}}.</li>
                           <li>[=Queue a task=] to [=fire an event=] named {{sourceopen}} at the <a>MediaSource</a>.</li>
                         </ol>
@@ -997,22 +1006,22 @@ interface MediaSource : EventTarget {
 
         <section id="duration-change-algorithm">
           <h4><dfn>Duration change</dfn></h4>
-          <p>Follow these steps when {{MediaSource/duration}} needs to change to a <var>new duration</var>.</p>
+          <p>Follow these steps when {{MediaSource/duration}} needs to change to a |new duration:unrestricted double|.</p>
           <ol>
-            <li>If the current value of {{MediaSource/duration}} is equal to <var>new duration</var>, then return.</li>
-            <li>If <var>new duration</var> is less than the highest [=presentation timestamp=] of any buffered [=coded frames=] for all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}, then throw an {{InvalidStateError}} exception and abort these steps.
+            <li>If the current value of {{MediaSource/duration}} is equal to |new duration|, then return.</li>
+            <li>If |new duration| is less than the highest [=presentation timestamp=] of any buffered [=coded frames=] for all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}, then throw an {{InvalidStateError}} exception and abort these steps.
             <p class="note">Duration reductions that would truncate currently buffered media are disallowed. When truncation is necessary, use {{SourceBuffer/remove()}} to reduce the buffered range before updating {{MediaSource/duration}}.</p>
             </li>
-            <li>Let <var>highest end time</var> be the largest [=track buffer ranges=] end time across all the [=track buffers=] across all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}.</li>
-            <li>If <var>new duration</var> is less than <var>highest end time</var>, then
+            <li>Let |highest end time:unrestricted double| be the largest [=track buffer ranges=] end time across all the [=track buffers=] across all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}.</li>
+            <li>If |new duration| is less than |highest end time|, then
               <p class="note">This condition can occur because the [=coded frame removal=] algorithm preserves coded frames that start before the start of the removal range.</p>
               <ol>
 
-                <li>Update <var>new duration</var> to equal <var>highest end time</var>.</li>
+                <li>Update |new duration| to equal |highest end time|.</li>
               </ol>
             </li>
-            <li>Update {{MediaSource/duration}} to <var>new duration</var>.</li>
-            <li>Update the <a def-id="hme-duration"></a> to <var>new duration</var>.</li>
+            <li>Update {{MediaSource/duration}} to |new duration|.</li>
+            <li>Update the <a def-id="hme-duration"></a> to |new duration|.</li>
             <li>
               <dl class="switch">
                 <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
@@ -1028,16 +1037,16 @@ interface MediaSource : EventTarget {
         <section id="end-of-stream-algorithm">
           <h4><dfn>End of stream</dfn></h4>
           <p>This algorithm gets called when the application signals the end of stream via an {{MediaSource/endOfStream()}} call or an algorithm needs to
-            signal a decode error. This algorithm takes an <var>error</var> parameter that indicates whether an error will be signalled.</p>
+            signal a decode error. This algorithm takes an |error:EndOfStreamError| parameter that indicates whether an error will be signalled.</p>
           <ol>
             <li>Change the {{MediaSource/readyState}} attribute value to {{ReadyState/""ended""}}.</li>
             <li>
               [=Queue a task=] to [=fire an event=] named {{sourceended}} at the <a>MediaSource</a>.</li>
             <li><dl class="switch">
-                <dt>If <var>error</var> is not set</dt>
+                <dt>If |error| is not set</dt>
                 <dd>
                   <ol>
-                    <li>Run the [=duration change=] algorithm with <var>new duration</var> set to
+                    <li>Run the [=duration change=] algorithm with |new duration| set to
                       the largest [=track buffer ranges=] end time across all the [=track buffers=] across all <a>SourceBuffer</a> objects in {{MediaSource/sourceBuffers}}.
                       <p class="note">This allows the duration to properly reflect the end of the appended media segments. For example, if the duration was explicitly set to 10 seconds and only media segments for 0 to 5 seconds were appended before endOfStream() was called, then the duration will get updated to 5 seconds.</p>
                     </li>
@@ -1053,7 +1062,7 @@ interface MediaSource : EventTarget {
                   </ol>
                 </dd>
 
-                <dt>If <var>error</var> is set to {{EndOfStreamError/""network""}}</dt>
+                <dt>If |error| is set to {{EndOfStreamError/""network""}}</dt>
                 <dd>
                 <dl class="switch">
                   <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
@@ -1073,7 +1082,7 @@ interface MediaSource : EventTarget {
                 </dl>
                 </dd>
 
-                <dt>If <var>error</var> is set to {{EndOfStreamError/""decode""}}</dt>
+                <dt>If |error| is set to {{EndOfStreamError/""decode""}}</dt>
                 <dd>
                 <dl class="switch">
                   <dt>If the {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
@@ -1582,7 +1591,7 @@ interface SourceBuffer : EventTarget {
             <li>[=Queue a task=] to [=fire an event=] named {{error}} at this <a>SourceBuffer</a> object.</li>
             <li>[=Queue a task=] to [=fire an event=] named {{updateend}} at this <a>SourceBuffer</a> object.</li>
             <li>Run the [=end of stream=] algorithm
-              with the <var>error</var> parameter set to {{EndOfStreamError/""decode""}}.</li>
+              with the |error:EndOfStreamError| parameter set to {{EndOfStreamError/""decode""}}.</li>
           </ol>
         </section>
 
@@ -1592,7 +1601,7 @@ interface SourceBuffer : EventTarget {
             <ol>
             <li>If the <a>SourceBuffer</a> has been removed from the {{MediaSource/sourceBuffers}} attribute of the [=parent media source=] then throw an {{InvalidStateError}} exception and abort these steps.</li>
             <li>If the {{SourceBuffer/updating}} attribute equals true, then throw an {{InvalidStateError}} exception and abort these steps.</li>
-            <li>Let |recent element error| be determined as follows:
+            <li>Let |recent element error:boolean| be determined as follows:
               <dl class="switch">
                 <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
                 <dd>Let |recent element error| be true if the {{HTMLMediaElement}}.{{HTMLMediaElement/error}} attribute
@@ -1651,6 +1660,7 @@ interface SourceBuffer : EventTarget {
             <li>[=Queue a task=] to [=fire an event=] named {{updateend}} at this <a>SourceBuffer</a> object.</li>
           </ol>
         </section>
+
         <section id="sourcebuffer-init-segment-received">
           <h4><dfn>Initialization Segment Received</dfn></h4>
           <p>The following steps are run when the [=segment parser loop=] successfully parses a complete [=initialization segment=]:</p>
@@ -1664,9 +1674,9 @@ interface SourceBuffer : EventTarget {
             <li>Update the {{MediaSource/duration}} attribute if it currently equals NaN:
               <dl class="switch">
                 <dt>If the initialization segment contains a duration:</dt>
-                <dd>Run the [=duration change=] algorithm with <var>new duration</var> set to the duration in the initialization segment.</dd>
+                <dd>Run the [=duration change=] algorithm with |new duration| set to the duration in the initialization segment.</dd>
                 <dt>Otherwise:</dt>
-                <dd>Run the [=duration change=] algorithm with <var>new duration</var> set to positive Infinity.</dd>
+                <dd>Run the [=duration change=] algorithm with |new duration| set to positive Infinity.</dd>
               </dl>
             </li>
             <li>If the [=initialization segment=] has no audio, video, or text tracks, then run the [=append error=] algorithm  and abort these steps.</li>
@@ -1701,7 +1711,7 @@ interface SourceBuffer : EventTarget {
                 <li>Set the [=need random access point flag=] on all track buffers to true.</li>
               </ol>
             </li>
-            <li>Let <var>active track flag</var> equal false.</li>
+            <li>Let |active track flag:boolean| equal false.</li>
             <li>
               <p>If the [=first initialization segment received flag=] is false, then run the following steps:</p>
               <ol>
@@ -1740,27 +1750,31 @@ interface SourceBuffer : EventTarget {
                       <ol>
                         <li>Let <var>current audio kind</var> equal the value from <var>audio kinds</var>
                           for this iteration of the loop.</li>
-                        <li>Let <var>new audio track</var> be a new {{AudioTrack}} object.</li>
-                        <li>Generate a unique ID and assign it to the <a def-id="audiotrack-id"></a> property on <var>new audio track</var>.</li>
+                        <li>Let |new audio track:AudioTrack| be a new {{AudioTrack}} object.</li>
+                        <li>Generate a unique ID and assign it to the <a def-id="audiotrack-id"></a> property on
+                          |new audio track|.</li>
                         <li>Assign <var>audio language</var> to the <a def-id="audiotrack-language"></a>
-                          property on <var>new audio track</var>.</li>
+                          property on |new audio track|.</li>
                         <li>Assign <var>audio label</var> to the <a def-id="audiotrack-label"></a>
-                          property on <var>new audio track</var>.</li>
+                          property on |new audio track|.</li>
                         <li>Assign <var>current audio kind</var> to the <a def-id="audiotrack-kind"></a>
-                          property on <var>new audio track</var>.</li>
+                          property on |new audio track|.</li>
                         <li>
                           <p>
                             If this {{SourceBuffer}} object's {{SourceBuffer/audioTracks}}.{{AudioTrackList/length}}</a> equals 0, then run
                             the following steps:
                           </p>
                           <ol>
-                            <li>Set the {{AudioTrack/enabled}} property on <var>new audio track</var> to true.</li>
-                            <li>Set <var>active track flag</var> to true.</li>
+                            <li>Set the {{AudioTrack/enabled}} property on |new audio track| to true.</li>
+                            <li>Set |active track flag| to true.</li>
                           </ol>
                         </li>
-                        <li>Add <var>new audio track</var> to the {{SourceBuffer/audioTracks}} attribute on this <a>SourceBuffer</a> object.
+                        <li>Add |new audio track| to the {{SourceBuffer/audioTracks}} attribute on this <a>SourceBuffer</a> object.
                         <p class="note">
-                          This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{SourceBuffer/audioTracks}} attribute on this <a>SourceBuffer</a> object.
+                          This should trigger {{AudioTrackList}} [[HTML]] logic to
+                          <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a>
+                          |new audio track|, at the {{AudioTrackList}} object referenced by the
+                          {{SourceBuffer/audioTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
                         <li>
@@ -1768,18 +1782,21 @@ interface SourceBuffer : EventTarget {
                             <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
                             <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
                             implicit handler in {{Window}} runs the following steps:<ol>
-                              <li>Let <var>mirrored audio track</var> be a new {{AudioTrack}} object.</li>
-                              <li>Assign the same property values to <var>mirrored audio track</var> as were determined for
-                                <var>new audio track</var>.</li>
-                              <li>Add <var>mirrored audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute
+                              <li>Let |mirrored audio track:AudioTrack| be a new {{AudioTrack}} object.</li>
+                              <li>Assign the same property values to |mirrored audio track| as were determined for
+                                |new audio track|.</li>
+                              <li>Add |mirrored audio track| to the {{HTMLMediaElement/audioTracks}} attribute
                                 on the HTMLMediaElement.</li>
                             </ol></dd>
                             <dt>Otherwise:</dt>
-                            <dd>Add <var>new audio track</var> to the {{HTMLMediaElement/audioTracks}} attribute on the
+                            <dd>Add |new audio track| to the {{HTMLMediaElement/audioTracks}} attribute on the
                             HTMLMediaElement.</dd>
                           </dl>
                           <p class="note">
-                            This should trigger {{AudioTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new audio track</var>, at the {{AudioTrackList}} object referenced by the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
+                            This should trigger {{AudioTrackList}} [[HTML]] logic to
+                            <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a>
+                            |mirrored audio track| or |new audio track|, at the {{AudioTrackList}} object referenced by
+                            the {{HTMLMediaElement/audioTracks}} attribute on the HTMLMediaElement.
                           </p>
                         </li>
                       </ol>
@@ -1807,27 +1824,31 @@ interface SourceBuffer : EventTarget {
                       <ol>
                         <li>Let <var>current video kind</var> equal the value from <var>video kinds</var>
                           for this iteration of the loop.</li>
-                        <li>Let <var>new video track</var> be a new {{VideoTrack}} object.</li>
-                        <li>Generate a unique ID and assign it to the {{VideoTrack/id}} property on <var>new video track</var>.</li>
+                        <li>Let |new video track:VideoTrack| be a new {{VideoTrack}} object.</li>
+                        <li>Generate a unique ID and assign it to the {{VideoTrack/id}} property on
+                          |new video track|.</li>
                         <li>Assign <var>video language</var> to the {{VideoTrack/language}}
-                          property on <var>new video track</var>.</li>
+                          property on |new video track|.</li>
                         <li>Assign <var>video label</var> to the {{VideoTrack/label}}
-                          property on <var>new video track</var>.</li>
+                          property on |new video track|.</li>
                         <li>Assign <var>current video kind</var> to the {{VideoTrack/kind}}
-                          property on <var>new video track</var>.</li>
+                          property on |new video track|.</li>
                         <li>
                           <p>
                             If this {{SourceBuffer}} object's {{SourceBuffer/videoTracks}}.{{VideoTrackList/length}} equals 0, then run
                             the following steps:
                           </p>
                           <ol>
-                            <li>Set the {{VideoTrack/selected}} property on <var>new video track</var> to true.</li>
-                            <li>Set <var>active track flag</var> to true.</li>
+                            <li>Set the {{VideoTrack/selected}} property on |new video track| to true.</li>
+                            <li>Set |active track flag| to true.</li>
                           </ol>
                         </li>
-                        <li>Add <var>new video track</var> to the {{SourceBuffer/videoTracks}} attribute on this <a>SourceBuffer</a> object.
+                        <li>Add |new video track| to the {{SourceBuffer/videoTracks}} attribute on this <a>SourceBuffer</a> object.
                         <p class="note">
-                          This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{SourceBuffer/videoTracks}} attribute on this <a>SourceBuffer</a> object.
+                          This should trigger {{VideoTrackList}} [[HTML]] logic to
+                          <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a>
+                          |new video track|, at the {{VideoTrackList}} object referenced by the
+                          {{SourceBuffer/videoTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
                         <li>
@@ -1835,18 +1856,21 @@ interface SourceBuffer : EventTarget {
                             <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
                             <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
                             implicit handler in {{Window}} runs the following steps:<ol>
-                              <li>Let <var>mirrored video track</var> be a new {{VideoTrack}} object.</li>
-                              <li>Assign the same property values to <var>mirrored video track</var> as were determined for
-                                <var>new video track</var>.</li>
-                              <li>Add <var>mirrored video track</var> to the {{HTMLMediaElement/videoTracks}} attribute
+                              <li>Let |mirrored video track:VideoTrack| be a new {{VideoTrack}} object.</li>
+                              <li>Assign the same property values to |mirrored video track| as were determined for
+                                |new video track|.</li>
+                              <li>Add |mirrored video track| to the {{HTMLMediaElement/videoTracks}} attribute
                                 on the HTMLMediaElement.</li>
                             </ol></dd>
                             <dt>Otherwise:</dt>
-                            <dd>Add <var>new video track</var> to the {{HTMLMediaElement/videoTracks}} attribute on the
+                            <dd>Add |new video track| to the {{HTMLMediaElement/videoTracks}} attribute on the
                             HTMLMediaElement.</dd>
                           </dl>
                           <p class="note">
-                            This should trigger {{VideoTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a> <var>new video track</var>, at the {{VideoTrackList}} object referenced by the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
+                            This should trigger {{VideoTrackList}} [[HTML]] logic to
+                            <a def-id="queue-and-fire-media-addtrack-with-track-attr-initialized-to"></a>
+                            |mirrored video track| or |new video track|, at the {{VideoTrackList}} object referenced by
+                            the {{HTMLMediaElement/videoTracks}} attribute on the HTMLMediaElement.
                           </p>
                         </li>
                       </ol>
@@ -1874,24 +1898,27 @@ interface SourceBuffer : EventTarget {
                       <ol>
                         <li>Let <var>current text kind</var> equal the value from <var>text kinds</var>
                           for this iteration of the loop.</li>
-                        <li>
-                          Let <var>new text track</var> be a new {{TextTrack}} object.</li>
-                        <li>Generate a unique ID and assign it to the {{TextTrack/id}} property on <var>new text track</var>.</li>
+                        <li>Let |new text track:TextTrack| be a new {{TextTrack}} object.</li>
+                        <li>Generate a unique ID and assign it to the {{TextTrack/id}} property on
+                          |new text track|.</li>
                         <li>Assign <var>text language</var> to the {{TextTrack/language}}
-                          property on <var>new text track</var>.</li>
+                          property on |new text track|.</li>
                         <li>Assign <var>text label</var> to the {{TextTrack/label}}
-                          property on <var>new text track</var>.</li>
+                          property on |new text track|.</li>
                         <li>Assign <var>current text kind</var> to the {{TextTrack/kind}}
-                          property on <var>new text track</var>.</li>
-                        <li>Populate the remaining properties on <var>new text track</var> with the
-                          appropriate information from the [=initialization segment=].
-                        </li><li>
-                          If the {{TextTrack/mode}} property on <var>new text track</var> equals <a def-id="texttrackmode-showing"></a> or
-                          <a def-id="texttrackmode-hidden"></a>, then set <var>active track flag</var> to true.
+                          property on |new text track|.</li>
+                        <li>Populate the remaining properties on |new text track| with the
+                          appropriate information from the [=initialization segment=].</li>
+                        <li>If the {{TextTrack/mode}} property on |new text track| equals
+                          <a def-id="texttrackmode-showing"></a> or <a def-id="texttrackmode-hidden"></a>, then set
+                          |active track flag| to true.
                         </li>
-                        <li>Add <var>new text track</var> to the {{SourceBuffer/textTracks}} attribute on this <a>SourceBuffer</a> object.
+                        <li>Add |new text track| to the {{SourceBuffer/textTracks}} attribute on this <a>SourceBuffer</a> object.
                         <p class="note">
-                          This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{SourceBuffer/textTracks}} attribute on this <a>SourceBuffer</a> object.
+                          This should trigger {{TextTrackList}} [[HTML]] logic to
+                          <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a>
+                          |new text track|, at the {{TextTrackList}} object referenced by the
+                          {{SourceBuffer/textTracks}} attribute on this <a>SourceBuffer</a> object.
                         </p>
                         </li>
                         <li>
@@ -1899,18 +1926,21 @@ interface SourceBuffer : EventTarget {
                             <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
                             <dd>Post an internal <code>create track mirror</code> message to [=port to main=] whose
                             implicit handler in {{Window}} runs the following steps:<ol>
-                              <li>Let <var>mirrored text track</var> be a new {{TextTrack}} object.</li>
-                              <li>Assign the same property values to <var>mirrored text track</var> as were determined for
-                                <var>new text track</var>.</li>
-                              <li>Add <var>mirrored text track</var> to the {{HTMLMediaElement/textTracks}} attribute
+                              <li>Let |mirrored text track:TextTrack| be a new {{TextTrack}} object.</li>
+                              <li>Assign the same property values to |mirrored text track| as were determined for
+                                |new text track|.</li>
+                              <li>Add |mirrored text track| to the {{HTMLMediaElement/textTracks}} attribute
                                 on the HTMLMediaElement.</li>
                             </ol></dd>
                             <dt>Otherwise:</dt>
-                            <dd>Add <var>new text track</var> to the {{HTMLMediaElement/textTracks}} attribute on the
+                            <dd>Add |new text track| to the {{HTMLMediaElement/textTracks}} attribute on the
                             HTMLMediaElement.</dd>
                           </dl>
                           <p class="note">
-                            This should trigger {{TextTrackList}} [[HTML]] logic to <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a> <var>new text track</var>, at the {{TextTrackList}} object referenced by the {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
+                            This should trigger {{TextTrackList}} [[HTML]] logic to
+                            <a def-id="queue-and-fire-text-addtrack-with-track-attr-initialized-to"></a>
+                            |mirrored text track| or |new text track|, at the {{TextTrackList}} object referenced by the
+                            {{HTMLMediaElement/textTracks}} attribute on the HTMLMediaElement.
                           </p>
                         </li>
                       </ol>
@@ -1919,7 +1949,7 @@ interface SourceBuffer : EventTarget {
                     <li>Add the [=track description=] for this track to the [=track buffer=].</li>
                   </ol>
                 </li>
-                <li>If <var>active track flag</var> equals true, then run the following steps:
+                <li>If |active track flag| equals true, then run the following steps:
                   <ol>
                     <li>Add this <a>SourceBuffer</a> to {{MediaSource/activeSourceBuffers}}.</li>
                     <li>[=Queue a task=] to [=fire an event=] named {{addsourcebuffer}} at {{MediaSource/activeSourceBuffers}}</li>
@@ -1929,7 +1959,7 @@ interface SourceBuffer : EventTarget {
               </ol>
             </li>
             <li>Set [=pending initialization segment for changeType flag=] to false.</li>
-            <li>If the <var>active track flag</var> equals true, then run the following steps:
+            <li>If the |active track flag| equals true, then run the following steps:
               <dl class="switch">
                 <dt>If the [=parent media source=] was constructed in a {{DedicatedWorkerGlobalScope}}:</dt>
                 <dd>Post an internal <code>active track added</code> message to [=port to main=] whose implicit handler
@@ -2167,7 +2197,8 @@ interface SourceBuffer : EventTarget {
               <p>If the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute is <a def-id="have-future-data"></a> and the new [=coded frames=] cause {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} to have a {{TimeRanges}} that includes the current playback position and [=enough data to ensure uninterrupted playback=], then set the {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} attribute to <a def-id="have-enough-data"></a>.</p>
               <p class="note">Per <a def-id="ready-states"></a> [[HTML]] logic, {{HTMLMediaElement}}.{{HTMLMediaElement/readyState}} changes may trigger events on the HTMLMediaElement.</p>
             </li>
-            <li>If the [=media segment=] contains data beyond the current {{MediaSource/duration}}, then run the [=duration change=] algorithm with <var>new duration</var> set to the maximum of the current duration and the [=group end timestamp=].</li>
+            <li>If the [=media segment=] contains data beyond the current {{MediaSource/duration}}, then run the
+              [=duration change=] algorithm with |new duration| set to the maximum of the current duration and the [=group end timestamp=].</li>
           </ol>
         </section>
 
@@ -2485,37 +2516,42 @@ interface SourceBufferList : EventTarget {
             </div>
           </li>
 
-          <li>Let <var>recent duration</var> and <var>recent live seekable range</var> respectively be the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as follows:
+          <li>Let |recent duration:unrestricted double| and |recent live seekable range:normalized TimeRanges|
+            respectively be the recent values of {{MediaSource/duration}} and [=live seekable range=], determined as
+            follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
-              <dd>Set <var>recent duration</var> to be {{MediaSource/duration}} and set <var>recent live seekable
-                range</var> to be [=live seekable range=].</dd>
+              <dd>Set |recent duration| to be {{MediaSource/duration}} and set |recent live seekable
+                range| to be [=live seekable range=].</dd>
               <dt>Otherwise:</dt>
-              <dd>Set <var>recent duration</var> and <var>recent live seekable range</var> respectively to be what the
-              {{MediaSource/duration}} and [=live seekable range=] were recently, updated by handling implicit messages posted by
-              the {{MediaSource}} to its [=port to main=] on every change to {{MediaSource/duration}} or [=live seekable
-              range=].</dd>
+              <dd>Set |recent duration| and |recent live seekable range| respectively to be what the
+                {{MediaSource/duration}} and [=live seekable range=] were recently, updated by handling implicit
+                messages posted by the {{MediaSource}} to its [=port to main=] on every change to
+                {{MediaSource/duration}} or [=live seekable range=].</dd>
             </dl>
           </li>
           <li>
             <dl class="switch">
-              <dt>If <var>recent duration</var> equals NaN:</dt>
+              <dt>If |recent duration| equals NaN:</dt>
               <dd>Return an empty {{TimeRanges}} object.</dd>
-              <dt>If <var>recent duration</var> equals positive Infinity:</dt>
+              <dt>If |recent duration| equals positive Infinity:</dt>
               <dd>
                 <ol>
-                  <li>If <var>recent live seekable range</var> is not empty:
+                  <li>If |recent live seekable range| is not empty:
                     <ol>
-                      <li>Let <var>union ranges</var> be the union of <var>recent live seekable range</var> and the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
-                      <li>Return a single range with a start time equal to the earliest start time in <var>union ranges</var> and an end time equal to the highest end time in <var>union ranges</var> and abort these steps.</li>
+                      <li>Let |union ranges:normalized TimeRanges| be the union of |recent live seekable range| and the
+                        {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.</li>
+                      <li>Return a single range with a start time equal to the earliest start time in |union ranges| and
+                        an end time equal to the highest end time in |union ranges| and abort these steps.</li>
                     </ol>
                   </li>
                   <li>If the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute returns an empty {{TimeRanges}}
                     object, then return an empty {{TimeRanges}} object and abort these steps.</li>
-                  <li>Return a single range with a start time of 0 and an end time equal to the highest end time reported by the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.
+                  <li>Return a single range with a start time of 0 and an end time equal to the highest end time
+                    reported by the {{HTMLMediaElement}}.{{HTMLMediaElement/buffered}} attribute.
               </li></ol></dd>
               <dt>Otherwise:</dt>
-              <dd>Return a single range with a start time of 0 and an end time equal to <var>recent duration</var>.</dd>
+              <dd>Return a single range with a start time of 0 and an end time equal to |recent duration|.</dd>
             </dl>
           </li>
         </ol>
@@ -2548,24 +2584,31 @@ interface SourceBufferList : EventTarget {
             </div>
           </li>
 
-          <li>Let <var>recent intersection ranges</var> be determined as follows:
+          <li>Let |recent intersection ranges:normalized TimeRanges| be determined as follows:
             <dl class="switch">
               <dt>If the {{MediaSource}} was constructed in a {{Window}}</dt>
               <dd>
               <ol>
-                <li>Let <var>recent intersection ranges</var> equal an empty {{TimeRanges}} object.</li>
+                <li>Let |recent intersection ranges| equal an empty {{TimeRanges}} object.</li>
                 <li>If {{MediaSource/activeSourceBuffers}}.length does not equal 0 then run the following steps:
                   <ol>
-                    <li>Let <var>active ranges</var> be the ranges returned by {{SourceBuffer/buffered}} for each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}}.</li>
-                    <li>Let <var>highest end time</var> be the largest range end time in the <var>active ranges</var>.</li>
-                    <li>Let <var>recent intersection ranges</var> equal a {{TimeRanges}} object containing a single range from 0 to <var>highest end time</var>.</li>
-                    <li>For each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}} run the following steps:
+                    <li>Let |active ranges:sequence of normalized TimeRanges| be the ranges returned by
+                      {{SourceBuffer/buffered}} for each <a>SourceBuffer</a> object in
+                      {{MediaSource/activeSourceBuffers}}.</li>
+                    <li>Let |highest end time:unrestricted double| be the largest range end time in the
+                      |active ranges|.</li>
+                    <li>Let |recent intersection ranges:normalized TimeRanges| equal a {{TimeRanges}} object containing
+                      a single range from 0 to |highest end time|.</li>
+                    <li>For each <a>SourceBuffer</a> object in {{MediaSource/activeSourceBuffers}} run the following
+                      steps:
                       <ol>
-                        <li>Let <var>source ranges</var> equal the ranges returned by the {{SourceBuffer/buffered}} attribute on the current <a>SourceBuffer</a>.</li>
-                        <li>If {{MediaSource/readyState}} is {{ReadyState/""ended""}}, then set the end time on the last range in <var>source ranges</var> to
-                          <var>highest end time</var>.</li>
-                        <li>Let <var>new intersection ranges</var> equal the intersection between the <var>recent intersection ranges</var> and the <var>source ranges</var>.</li>
-                        <li>Replace the ranges in <var>recent intersection ranges</var> with the <var>new intersection ranges</var>.</li>
+                        <li>Let |source ranges:normalized TimeRanges| equal the ranges returned by the
+                          {{SourceBuffer/buffered}} attribute on the current <a>SourceBuffer</a>.</li>
+                        <li>If {{MediaSource/readyState}} is {{ReadyState/""ended""}}, then set the end time on the last
+                          range in |source ranges| to |highest end time|.</li>
+                        <li>Let |new intersection ranges:normalized TimeRanges| equal the intersection between the
+                          |recent intersection ranges| and the |source ranges|.</li>
+                        <li>Replace the ranges in |recent intersection ranges| with the |new intersection ranges|.</li>
                       </ol>
                     </li>
                   </ol>
@@ -2573,13 +2616,13 @@ interface SourceBufferList : EventTarget {
               </ol>
               </dd>
               <dt>Otherwise:</dt>
-              <dd>Let <var>recent intersection ranges</var> be the {{TimeRanges}} resulting from the steps for the
+              <dd>Let |recent intersection ranges| be the {{TimeRanges}} resulting from the steps for the
               {{Window}} case, but run with the {{MediaSource}} and its {{SourceBuffer}} objects in their
               {{DedicatedWorkerGlobalScope}} and communicated by using [=port to main=] implicit messages on
               every update to the {{MediaSource/activeSourceBuffers}}, {{MediaSource/readyState}}, or any of the
               buffering state that would change any of the values of each of those {{SourceBuffer/buffered}} attributes
               of the {{MediaSource/activeSourceBuffers}}.
-              <p class="note">The overhead of recalculating and communicating <var>recent intersection ranges</var> so
+              <p class="note">The overhead of recalculating and communicating |recent intersection ranges| so
               frequently is one reason for allowing implementation flexibility to query this information on-demand using
               other mechanisms such as shared memory and locks as mentioned in [=cross-context communication
               model=].</p>
@@ -2587,9 +2630,9 @@ interface SourceBufferList : EventTarget {
             </dl>
           </li>
           <li>If the current value of this attribute has not been set by this algorithm or
-            <var>recent intersection ranges</var> does not contain the exact same range information as the
+            |recent intersection ranges| does not contain the exact same range information as the
             current value of this attribute, then update the current value of this attribute to
-            <var>recent intersection ranges</var>.
+            |recent intersection ranges|.
           </li><li>Return the current value of this attribute.</li>
         </ol>
       </section>
