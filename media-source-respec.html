@@ -931,7 +931,7 @@ interface MediaSource : EventTarget {
         <section id="active-source-buffer-changes">
           <h4><dfn>Changes to selected/enabled track state</dfn></h4>
           <p>During playback {{MediaSource/activeSourceBuffers}} needs to be updated if the <a def-id="videoref" name="dom-videotrack-selected">selected video track</a>, the <a def-id="videoref" name="dom-audiotrack-enabled">enabled audio track(s)</a>, or a text track <a def-id="videoref" name="dom-texttrack-mode">mode</a> changes. When one or more of these changes occur the following steps need to be followed.
-             Also, when {{MediaSource}} was constructed in {{DedicatedWorkerGlobalScope}}, then each change that occurs
+             Also, when {{MediaSource}} was constructed in a {{DedicatedWorkerGlobalScope}}, then each change that occurs
              to a {{Window}} mirror of a track created previously by the implicit handler for the internal <code>create
                track mirror</code> message MUST also be made to the corresponding {{DedicatedWorkerGlobalScope}} track
              using an internal <code>update track state</code> message posted to [=port to worker=] whose implicit
