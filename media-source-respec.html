@@ -372,7 +372,10 @@ interface MediaSource : EventTarget {
         </dd>
         <dt><dfn><code>canConstructInDedicatedWorker</code></dfn> of type {{boolean}}</dt><dd>
           <p>Returns true.</p>
-          <p class="note">This attribute enables feature detection of support for MSE-in-Workers without requiring an application to attempt usage first from a DedicatedWorker.</p>
+          <p class="note">This attribute enables main thread and dedicated worker feature detection of support for
+            creating and using a {{MediaSource}} object in a dedicated worker, and mitigates the need for higher latency
+            detection polyfills like attempting creation of a {{MediaSource}} object from a dedicated worker, especially
+            if the feature is not supported.</p>
         </dd></dl></section><section><h2>Methods</h2><dl class="methods" data-dfn-for="MediaSource"><dt><dfn><code>addSourceBuffer</code></dfn></dt><dd>
           <p>Adds a new <a>SourceBuffer</a> to {{MediaSource/sourceBuffers}}.</p>
           <ol class="method-algorithm">
